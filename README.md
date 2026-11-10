@@ -29,7 +29,10 @@ analisis-compras/
 │  ├─ data/mock/      # datos de respaldo
 │  ├─ tests/
 │  └─ requirements.txt
-├─ frontend/          # Next.js 16
+├─ frontend/
+│  ├─ src/app/        # páginas / y /history
+│  ├─ src/components/ # componentes de UI
+│  └─ src/lib/        # tipos, cliente API y utilidades
 ├─ docs/              # documentación del proyecto
 ├─ scripts/           # utilidades
 ├─ .env.example
@@ -59,6 +62,8 @@ analisis-compras/
    npm install
    npm run dev
    ```
+
+   Opcional: crea `frontend/.env.local` con `NEXT_PUBLIC_API_URL=http://localhost:8000` si el backend usa otra URL.
 
 - Backend: http://localhost:8000 (Swagger en `/docs`)
 - Frontend: http://localhost:3000
@@ -105,6 +110,8 @@ El agente guarda una fila por opción analizada al ejecutar `scripts/run_agent.p
 - [Glosario](docs/00_glosario.md)
 - [Arquitectura](docs/01_arquitectura.md)
 - [Base de datos](docs/03_base_de_datos.md)
+- [API](docs/04_api.md)
+- [Frontend](docs/05_frontend.md)
 - [Decisiones técnicas (ADRs)](docs/08_decisiones_tecnicas.md)
 - Índice completo: [docs/](docs/README.md)
 
@@ -141,6 +148,14 @@ Prueba del agente multiagente:
 
 La suite completa tiene 23 pruebas en verde.
 
+Verificación del frontend:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
+
 ## Estado del proyecto
 
 - [x] Fase 1 — Scaffolding
@@ -149,7 +164,7 @@ La suite completa tiene 23 pruebas en verde.
 - [x] Fase 4 — Grafo multiagente
 - [x] Fase 5 — Persistencia
 - [x] Fase 6 — API FastAPI
-- [ ] Fase 7 — Frontend Next.js
+- [x] Fase 7 — Frontend Next.js
 - [ ] Fase 8 — Pruebas y QA
 - [ ] Fase 9 — Investigación y PDF
 - [ ] Fase 10 — Empaquetado y entrega

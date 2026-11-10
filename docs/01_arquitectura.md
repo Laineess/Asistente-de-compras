@@ -103,6 +103,8 @@ sequenceDiagram
     FE-->>U: tabla comparativa, score y audiencia
 ```
 
+El frontend usa `POST /api/analyze` para obtener el resultado completo o `POST /api/analyze/stream` para mostrar el avance por SSE.
+
 ## 5. Grafo multiagente
 
 El grafo usa un **supervisor** que decide qué especialista actúa y vuelve a él tras cada paso. La síntesis usa Gemini, el validador cierra el análisis y el nodo de persistencia guarda las opciones en `resultados`.
@@ -219,12 +221,27 @@ La tabla `resultados` guarda una fila por opción de producto analizada. El deta
 
 ## 10. Frontend
 
+Next.js 16 (App Router) con React 19, TypeScript y Tailwind CSS 4. Las páginas son Client Components y consumen la API desde el navegador; el build no requiere que FastAPI esté levantado.
+
 | Ruta | Descripción |
 |---|---|
-| `/` | Buscador, selección de tiendas y resultados del análisis. |
-| `/history` | Historial de consultas leídas desde la base de datos. |
+| `/` | Buscador, selección de tiendas, progreso del agente y resultados del análisis. |
+| `/history` | Historial de consultas leídas desde la base de datos, con filtro y estadísticas. |
 
-Componentes principales: `SearchBar`, `StoreSelector`, `PriceSummaryCards`, `ComparisonTable`, `ReviewScoreGauge`, `AudienceList`, `AgentProgress`, `HistoryTable`.
+| Componente | Responsabilidad |
+|---|---|
+| `SearchBar` | Formulario de producto, tiendas, límite, perfil y opciones de ejecución. |
+| `StoreSelector` | Selección de Walmart, Costco y Sam's. |
+| `AgentProgress` | Nodos del grafo y traza de pasos en tiempo real. |
+| `AnalysisView` | Recomendación, precios, comparación, reseñas y audiencia. |
+| `PriceSummaryCards` | Precio mínimo, máximo, promedio y ahorro. |
+| `ComparisonTable` | Tabla de opciones con tienda, precio, score, fuente y enlace. |
+| `ReviewScoreGauge` | Score /10, pros, contras y fuentes. |
+| `AudienceList` | Perfiles de comprador con porcentaje y evidencia. |
+| `HistoryTable` | Filas persistidas con estados de carga y vacío. |
+| `StatsCards` | Totales, rango de precios y promedio por comercio. |
+
+El cliente `frontend/src/lib/api.ts` expone `analyze`, `analyzeStream`, `fetchHistory` y `fetchStats`; `NEXT_PUBLIC_API_URL` define la URL base. El detalle está en [`05_frontend.md`](05_frontend.md).
 
 ## 11. Requisitos no funcionales
 
@@ -255,7 +272,10 @@ analisis-compras/
 │  ├─ data/mock/            # datos de respaldo
 │  ├─ tests/
 │  └─ requirements.txt
-├─ frontend/                # Next.js 16
+├─ frontend/
+│  ├─ src/app/              # páginas / y /history
+│  ├─ src/components/       # componentes de UI
+│  └─ src/lib/              # cliente API, tipos y utilidades
 ├─ docs/                    # documentación
 ├─ scripts/                 # utilidades
 ├─ .env.example
@@ -278,4 +298,4 @@ Las decisiones y sus alternativas están documentadas como ADRs en [`08_decision
 
 ## 15. Roadmap
 
-El plan por fases vive en el README principal. Estado actual: Fase 6 completada (API FastAPI).
+El plan por fases vive en el README principal. Estado actual: Fase 7 completada (frontend Next.js).

@@ -9,7 +9,7 @@
 | [`02_agentes_y_langgraph.md`](02_agentes_y_langgraph.md) | Completado | 4 |
 | [`03_base_de_datos.md`](03_base_de_datos.md) | Completado | 2-5 |
 | [`04_api.md`](04_api.md) | Completado | 6 |
-| [`05_frontend.md`](05_frontend.md) | Pendiente | 7 |
+| [`05_frontend.md`](05_frontend.md) | Completado | 7 |
 | [`06_manual_usuario.md`](06_manual_usuario.md) | Pendiente | 10 |
 | [`07_investigacion_agentes.md`](07_investigacion_agentes.md) / `.pdf` | Pendiente | 9 |
 | [`08_decisiones_tecnicas.md`](08_decisiones_tecnicas.md) | Completado | 2 |
@@ -53,6 +53,14 @@
 - Stream SSE con eventos `update`, `done` y `error`.
 - `lifespan` inicializa la base de datos al arrancar.
 - 23 pruebas en verde (incluye `test_api.py`).
+
+## Estado de la Fase 7
+
+- Frontend Next.js 16 con rutas `/` y `/history`.
+- Cliente de API con modo JSON y stream SSE, cancelación y manejo de errores.
+- Componentes de búsqueda, progreso, comparación, reseñas, audiencia, historial y estadísticas.
+- Layout responsive con navegación, metadatos en español y modo oscuro.
+- `npm run lint` y `npm run build` sin errores.
 
 ## Convenciones
 
