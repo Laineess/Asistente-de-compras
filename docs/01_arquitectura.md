@@ -253,6 +253,7 @@ El cliente `frontend/src/lib/api.ts` expone `analyze`, `analyzeStream`, `fetchHi
 | Observabilidad | Logs estructurados y traza de pasos en `historial`. |
 | Portabilidad | SQLite/MySQL conmutables y ejecución local en Windows o Linux. |
 | Mantenibilidad | Separación por capas (`graph`, `agents`, `tools`, `providers`, `db`). |
+| Calidad | 64 pruebas backend con 90.8% de cobertura, 11 pruebas frontend, ESLint y build de Next.js. |
 
 ## 12. Estructura del repositorio
 
@@ -298,4 +299,4 @@ Las decisiones y sus alternativas están documentadas como ADRs en [`08_decision
 
 ## 15. Roadmap
 
-El plan por fases vive en el README principal. Estado actual: Fase 7 completada (frontend Next.js).
+El plan por fases vive en el README principal. Estado actual: Fase 8 completada (pruebas y QA).

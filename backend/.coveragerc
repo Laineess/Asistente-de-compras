@@ -1,0 +1,10 @@
+[run]
+source = app
+branch = True
+omit =
+    app/prompts/*
+
+[report]
+show_missing = True
+skip_covered = False
+precision = 1

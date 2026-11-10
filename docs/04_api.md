@@ -203,4 +203,4 @@ curl "http://localhost:8000/api/stats?producto=laptop"
 
 ## Pruebas
 
-`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de `limit` y el stream SSE. La suite completa tiene **23 pruebas** en verde.
+`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **64 pruebas** en verde y 90.8% de cobertura.

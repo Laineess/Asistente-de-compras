@@ -13,7 +13,7 @@
 | [`06_manual_usuario.md`](06_manual_usuario.md) | Pendiente | 10 |
 | [`07_investigacion_agentes.md`](07_investigacion_agentes.md) / `.pdf` | Pendiente | 9 |
 | [`08_decisiones_tecnicas.md`](08_decisiones_tecnicas.md) | Completado | 2 |
-| [`09_pruebas.md`](09_pruebas.md) | Pendiente | 8 |
+| [`09_pruebas.md`](09_pruebas.md) | Completado | 8 |
 
 ## Estado de la Fase 2
 
@@ -61,6 +61,14 @@
 - Componentes de búsqueda, progreso, comparación, reseñas, audiencia, historial y estadísticas.
 - Layout responsive con navegación, metadatos en español y modo oscuro.
 - `npm run lint` y `npm run build` sin errores.
+
+## Estado de la Fase 8
+
+- 64 pruebas backend en verde y 90.8% de cobertura con `pytest-cov`.
+- Pruebas nuevas de agentes, configuración, LLM, factory, sesión y Tavily.
+- 11 pruebas frontend con Vitest para utilidades y parser SSE.
+- `npm test`, `npm run lint` y `npm run build` sin errores.
+- Estrategia, comandos y limitaciones documentados en [`09_pruebas.md`](09_pruebas.md).
 
 ## Convenciones
 

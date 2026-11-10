@@ -113,6 +113,7 @@ El agente guarda una fila por opción analizada al ejecutar `scripts/run_agent.p
 - [API](docs/04_api.md)
 - [Frontend](docs/05_frontend.md)
 - [Decisiones técnicas (ADRs)](docs/08_decisiones_tecnicas.md)
+- [Pruebas](docs/09_pruebas.md)
 - Índice completo: [docs/](docs/README.md)
 
 ## Pruebas
@@ -120,6 +121,7 @@ El agente guarda una fila por opción analizada al ejecutar `scripts/run_agent.p
 ```bash
 cd backend
 ../.venv/Scripts/python.exe -m pytest -q
+../.venv/Scripts/python.exe -m pytest --cov=app --cov-report=term-missing -q
 ```
 
 Prueba manual de la capa de datos (sin LLM):
@@ -146,15 +148,18 @@ Prueba del agente multiagente:
 
 > Gemini free tier: 20 solicitudes/día. El agente usa heurísticas si se agota la cuota.
 
-La suite completa tiene 23 pruebas en verde.
+La suite completa tiene 64 pruebas en verde y una cobertura de backend de 90.8%.
 
 Verificación del frontend:
 
 ```bash
 cd frontend
+npm test
 npm run lint
 npm run build
 ```
+
+El frontend suma 11 pruebas unitarias con Vitest.
 
 ## Estado del proyecto
 
@@ -165,7 +170,7 @@ npm run build
 - [x] Fase 5 — Persistencia
 - [x] Fase 6 — API FastAPI
 - [x] Fase 7 — Frontend Next.js
-- [ ] Fase 8 — Pruebas y QA
+- [x] Fase 8 — Pruebas y QA
 - [ ] Fase 9 — Investigación y PDF
 - [ ] Fase 10 — Empaquetado y entrega
 

@@ -138,20 +138,22 @@ La respuesta incluye `resultado`, `pasos`, `errores`, `advertencias` y `filas_gu
 cd frontend
 npm install
 npm run dev      # http://localhost:3000
+npm test
 npm run lint
 npm run build
 npm run start
 ```
 
-Verificación de la Fase 7:
+Verificación actual:
 
+- `npm test` ejecuta 11 pruebas de Vitest.
 - `npm run lint` sin errores.
 - `npm run build` compila TypeScript y genera `/` y `/history` como páginas estáticas.
 
 ## 10. Limitaciones
 
 - Sin autenticación ni multiusuario.
-- Sin pruebas automatizadas de componentes ni E2E.
+- Sin pruebas de componentes ni E2E; las pruebas cubren utilidades y el parser SSE.
 - Sin selector manual de tema claro/oscuro.
 - Sin internacionalización; la interfaz está en español.
 - El historial se limita a las últimas 50 filas desde la interfaz.

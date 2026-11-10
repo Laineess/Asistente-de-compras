@@ -1,7 +1,7 @@
 import json
 
 from app.agents.review_agent import heuristic_review
-from app.graph import run_analysis
+from app.graph import build_graph, run_analysis
 from app.models import ProductOption, ProductQuery, ReviewSnippet, SearchResult, Store
 from app.providers.mock_provider import MockProvider
 from app.providers.service import ProductSearchService
@@ -146,6 +146,23 @@ def test_graph_stops_when_no_options() -> None:
     assert state["resultado"] is None
     assert state["errores"]
     assert "supervisor:fin" in state["pasos"]
+
+
+def test_build_graph_builds_default_llm_and_repository(monkeypatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(
+        "app.graph.builder.build_llm",
+        lambda: calls.append("llm") or None,
+    )
+    monkeypatch.setattr(
+        "app.graph.builder.build_default_repository",
+        lambda: calls.append("repository") or None,
+    )
+
+    graph = build_graph(service=mock_service(), use_llm=True, persist=True)
+
+    assert calls == ["llm", "repository"]
+    assert graph is not None
 
 
 def test_heuristic_review_extracts_pros_and_cons() -> None:

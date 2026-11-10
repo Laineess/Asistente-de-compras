@@ -216,3 +216,74 @@ def test_analyze_stream_emits_done(monkeypatch) -> None:
     assert response.status_code == 200
     assert '"event": "done"' in response.text
     assert "Recomendación de prueba." in response.text
+
+
+def test_analyze_validates_empty_product_and_limit() -> None:
+    empty_product = client.post("/api/analyze", json={"producto": ""})
+    assert empty_product.status_code == 422
+
+    invalid_limit = client.post(
+        "/api/analyze",
+        json={"producto": "laptop", "limite_por_tienda": 11},
+    )
+    assert invalid_limit.status_code == 422
+
+
+def test_history_rejects_empty_product_filter() -> None:
+    app.dependency_overrides[get_repository] = lambda: None
+    try:
+        response = client.get("/api/history", params={"producto": ""})
+        assert response.status_code == 422
+    finally:
+        app.dependency_overrides.pop(get_repository, None)
+
+
+class FailingGraph:
+    def stream(self, state, stream_mode="updates"):
+        raise RuntimeError("fallo de stream")
+
+
+def test_analyze_stream_emits_error(monkeypatch) -> None:
+    monkeypatch.setattr("app.api.routes.build_graph", lambda **kwargs: FailingGraph())
+
+    response = client.post(
+        "/api/analyze/stream",
+        json={
+            "producto": "laptop",
+            "limite_por_tienda": 2,
+            "usar_llm": False,
+            "guardar": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert '"event": "error"' in response.text
+    assert "fallo de stream" in response.text
+
+
+def test_analyze_stream_returns_500_when_graph_cannot_be_built(monkeypatch) -> None:
+    def failing_build_graph(**kwargs):
+        raise RuntimeError("graph caido")
+
+    monkeypatch.setattr("app.api.routes.build_graph", failing_build_graph)
+
+    response = client.post(
+        "/api/analyze/stream",
+        json={"producto": "laptop", "usar_llm": False, "guardar": False},
+    )
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == "graph caido"
+
+
+def test_get_repository_uses_cached_factory(monkeypatch) -> None:
+    get_repository.cache_clear()
+    monkeypatch.setattr(
+        "app.api.routes.build_default_repository",
+        lambda: "repositorio",
+    )
+
+    assert get_repository() == "repositorio"
+    assert get_repository() == "repositorio"
+
+    get_repository.cache_clear()
