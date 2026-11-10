@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 
 import type { Store } from "@/lib/types";
+import { formatCurrency } from "@/lib/utils";
 
 import { StoreSelector } from "./StoreSelector";
 
@@ -15,6 +16,8 @@ interface SearchBarProps {
   onLimiteChange: (value: number) => void;
   perfil: string;
   onPerfilChange: (value: string) => void;
+  presupuesto: number;
+  onPresupuestoChange: (value: number) => void;
   usarLlm: boolean;
   onUsarLlmChange: (value: boolean) => void;
   guardar: boolean;
@@ -35,6 +38,8 @@ export function SearchBar({
   onLimiteChange,
   perfil,
   onPerfilChange,
+  presupuesto,
+  onPresupuestoChange,
   usarLlm,
   onUsarLlmChange,
   guardar,
@@ -50,7 +55,7 @@ export function SearchBar({
   return (
     <form
       onSubmit={onSubmit}
-      className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="flex flex-col gap-5">
         <div>
@@ -154,6 +159,42 @@ export function SearchBar({
           </div>
         </div>
 
+        <div>
+          <div className="flex items-center justify-between gap-3">
+            <label
+              htmlFor="presupuesto"
+              className="text-sm font-medium text-zinc-900 dark:text-zinc-100"
+            >
+              Presupuesto máximo
+            </label>
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+              {presupuesto > 0
+                ? formatCurrency(presupuesto, "MXN")
+                : "Sin límite"}
+            </span>
+          </div>
+          <input
+            id="presupuesto"
+            type="range"
+            min={0}
+            max={100000}
+            step={500}
+            value={presupuesto}
+            onChange={(event) => onPresupuestoChange(Number(event.target.value))}
+            disabled={loading}
+            className="budget-slider mt-4"
+            aria-valuetext={
+              presupuesto > 0
+                ? formatCurrency(presupuesto, "MXN")
+                : "Sin límite"
+            }
+          />
+          <div className="mt-2 flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+            <span>Sin límite</span>
+            <span>{formatCurrency(100000, "MXN")}</span>
+          </div>
+        </div>
+
         <div className="flex flex-wrap gap-x-6 gap-y-3">
           <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
             <input
@@ -204,7 +245,7 @@ export function SearchBar({
             <button
               type="submit"
               disabled={!canSubmit}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/40 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-zinc-900"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/40 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-zinc-900"
             >
               {loading ? (
                 <>

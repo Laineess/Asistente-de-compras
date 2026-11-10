@@ -12,12 +12,19 @@ export function AgentProgress({
   loading,
 }: AgentProgressProps) {
   const seen = new Set(nodos);
-  const activeNode = loading && nodos.length > 0 ? nodos[nodos.length - 1] : null;
+  const lastIndex = nodos.reduce(
+    (max, node) => Math.max(max, NODE_ORDER.indexOf(node)),
+    -1,
+  );
+  const activeNode =
+    loading && lastIndex >= 0 && lastIndex < NODE_ORDER.length - 1
+      ? NODE_ORDER[lastIndex + 1]
+      : null;
 
   return (
     <section
       aria-live="polite"
-      className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="flex items-center justify-between gap-4">
         <div>
@@ -25,7 +32,9 @@ export function AgentProgress({
             Progreso del agente
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            {loading ? "Trabajando..." : "Ejecución completada"}
+            {loading
+              ? "Trabajando... las etapas con Gemini pueden tardar hasta 30 s."
+              : "Ejecución completada"}
           </p>
         </div>
         {loading && (

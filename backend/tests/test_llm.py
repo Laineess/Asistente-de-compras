@@ -64,6 +64,8 @@ def test_build_llm_uses_configured_model_and_key(monkeypatch) -> None:
 
     monkeypatch.setattr("app.llm.settings.gemini_api_key", "clave")
     monkeypatch.setattr("app.llm.settings.gemini_model", "modelo-prueba")
+    monkeypatch.setattr("app.llm.settings.gemini_timeout_seconds", 12.5)
+    monkeypatch.setattr("app.llm.settings.gemini_retries", 2)
     monkeypatch.setattr("app.llm.ChatGoogleGenerativeAI", FakeChatModel)
 
     model = build_llm()
@@ -71,4 +73,6 @@ def test_build_llm_uses_configured_model_and_key(monkeypatch) -> None:
     assert isinstance(model, FakeChatModel)
     assert captured["model"] == "modelo-prueba"
     assert captured["google_api_key"] == "clave"
+    assert captured["request_timeout"] == 12.5
+    assert captured["retries"] == 2
     assert captured["model_kwargs"] == {"transport": "rest"}

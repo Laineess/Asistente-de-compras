@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -81,6 +82,7 @@ def run_analysis(
     limite_por_tienda: int = 3,
     perfil: str | None = None,
     tiendas: list[Store] | None = None,
+    presupuesto: Decimal | None = None,
     service: Any | None = None,
     llm: BaseChatModel | None = None,
     use_llm: bool = True,
@@ -99,5 +101,6 @@ def run_analysis(
         limite_por_tienda=limite_por_tienda,
         perfil=perfil,
         tiendas=tiendas,
+        presupuesto=presupuesto,
     )
     return graph.invoke(state)

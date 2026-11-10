@@ -148,7 +148,7 @@ Prueba del agente multiagente:
 
 > Gemini free tier: 20 solicitudes/día. El agente usa heurísticas si se agota la cuota.
 
-La suite completa tiene 64 pruebas en verde y una cobertura de backend de 90.8%.
+La suite completa tiene 67 pruebas en verde y una cobertura de backend de 90.5%.
 
 Verificación del frontend:
 

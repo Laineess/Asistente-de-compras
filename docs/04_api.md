@@ -34,6 +34,7 @@ Al arrancar, el `lifespan` llama a `init_db()` y crea la tabla `resultados` si n
   "tiendas": ["walmart", "costco", "sams"],
   "limite_por_tienda": 3,
   "perfil": "estudiante universitario",
+  "presupuesto": 13000,
   "usar_llm": true,
   "guardar": true
 }
@@ -45,6 +46,7 @@ Al arrancar, el `lifespan` llama a `init_db()` y crea la tabla `resultados` si n
 | `tiendas` | string[] | las tres tiendas | Valores: `walmart`, `costco`, `sams`. |
 | `limite_por_tienda` | int | `3` | Entre 1 y 10. |
 | `perfil` | string \| null | `null` | Texto libre para el análisis de audiencia. |
+| `presupuesto` | number \| null | `null` | Máximo en MXN; filtra la recomendación de precios. `null` o `0` significa sin límite. |
 | `usar_llm` | bool | `true` | `false` usa solo heurísticas (sin Gemini). |
 | `guardar` | bool | `true` | `false` omite la persistencia. |
 
@@ -78,7 +80,9 @@ Al arrancar, el `lifespan` llama a `init_db()` y crea la tabla `resultados` si n
       "moneda": "MXN",
       "opciones_consideradas": 3,
       "comercio_mas_barato": "Walmart",
-      "comercio_mas_caro": "Costco"
+      "comercio_mas_caro": "Costco",
+      "presupuesto": "13000.00",
+      "opciones_dentro_presupuesto": 2
     },
     "resumen_resenas": {
       "score": 8.1,
@@ -99,6 +103,7 @@ Al arrancar, el `lifespan` llama a `init_db()` y crea la tabla `resultados` si n
       ],
       "sintesis": "Perfil principal: estudiante."
     },
+    "presupuesto": "13000.00",
     "recomendacion": "Conviene la opción de Walmart por precio y reseñas.",
     "advertencias": [],
     "filas_guardadas": 3,
@@ -203,4 +208,4 @@ curl "http://localhost:8000/api/stats?producto=laptop"
 
 ## Pruebas
 
-`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **64 pruebas** en verde y 90.8% de cobertura.
+`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **67 pruebas** en verde y 90.5% de cobertura.

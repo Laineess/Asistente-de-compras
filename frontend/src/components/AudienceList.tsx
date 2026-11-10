@@ -6,7 +6,7 @@ interface AudienceListProps {
 
 export function AudienceList({ summary }: AudienceListProps) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
       <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         Perfiles de comprador
       </h2>

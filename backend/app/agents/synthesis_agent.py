@@ -39,6 +39,13 @@ def _options_to_text(options: list[ProductOption]) -> str:
 def _price_to_text(summary: PriceSummary | None) -> str:
     if summary is None:
         return "No disponible"
+    budget = ""
+    if summary.presupuesto is not None:
+        budget = (
+            f" presupuesto máximo: {_format_money(summary.presupuesto)}; "
+            f"opciones dentro del presupuesto: "
+            f"{summary.opciones_dentro_presupuesto or 0}."
+        )
     return (
         f"Precio mínimo: {_format_money(summary.precio_minimo)} {summary.moneda}; "
         f"máximo: {_format_money(summary.precio_maximo)}; "
@@ -46,7 +53,7 @@ def _price_to_text(summary: PriceSummary | None) -> str:
         f"rango: {_format_money(summary.rango)}; "
         f"opción recomendada: {summary.opcion_recomendada} "
         f"({summary.comercio_mas_barato}); "
-        f"comercio más caro: {summary.comercio_mas_caro}."
+        f"comercio más caro: {summary.comercio_mas_caro}.{budget}"
     )
 
 
@@ -97,6 +104,18 @@ def fallback_recommendation(state: AgentState) -> str:
             f"{_format_money(price.precio_maximo)} "
             f"(promedio {_format_money(price.precio_promedio)})."
         )
+    if price is not None and price.presupuesto is not None:
+        if price.opciones_dentro_presupuesto:
+            lines.append(
+                f"Cumple el presupuesto máximo de "
+                f"{_format_money(price.presupuesto)} MXN con "
+                f"{price.opciones_dentro_presupuesto} opción(es)."
+            )
+        else:
+            lines.append(
+                f"Ninguna opción cumple el presupuesto de "
+                f"{_format_money(price.presupuesto)} MXN."
+            )
     if review is not None:
         lines.append(f"Reseñas: {review.sintesis}")
     if audience is not None and audience.sintesis:
@@ -135,6 +154,7 @@ def make_synthesis_agent(llm: BaseChatModel | None) -> Callable[[AgentState], di
             resumen_precios=state.get("resumen_precios"),
             resumen_resenas=state.get("resumen_resenas"),
             usuarios_relevantes=state.get("resumen_audiencia"),
+            presupuesto=state.get("presupuesto"),
             recomendacion=recommendation,
             advertencias=list(state.get("advertencias", [])),
             errores=list(state.get("errores", [])),

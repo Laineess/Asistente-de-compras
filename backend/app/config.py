@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.8-flash"
+    gemini_timeout_seconds: float = 30.0
+    gemini_retries: int = 0
 
     tavily_api_key: str = ""
 

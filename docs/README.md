@@ -64,7 +64,7 @@
 
 ## Estado de la Fase 8
 
-- 64 pruebas backend en verde y 90.8% de cobertura con `pytest-cov`.
+- 67 pruebas backend en verde y 90.5% de cobertura con `pytest-cov`.
 - Pruebas nuevas de agentes, configuración, LLM, factory, sesión y Tavily.
 - 11 pruebas frontend con Vitest para utilidades y parser SSE.
 - `npm test`, `npm run lint` y `npm run build` sin errores.

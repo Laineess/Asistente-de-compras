@@ -33,6 +33,7 @@ def analyze(request: AnalyzeRequest) -> AnalyzeResponse:
         limite_por_tienda=request.limite_por_tienda,
         perfil=request.perfil,
         tiendas=request.tiendas,
+        presupuesto=request.presupuesto,
         use_llm=request.usar_llm,
         persist=request.guardar,
     )
@@ -63,6 +64,7 @@ def analyze_stream(request: AnalyzeRequest) -> StreamingResponse:
             limite_por_tienda=request.limite_por_tienda,
             perfil=request.perfil,
             tiendas=request.tiendas,
+            presupuesto=request.presupuesto,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc

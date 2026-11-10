@@ -39,6 +39,7 @@ export default function Home() {
   const [tiendas, setTiendas] = useState<Store[]>(() => [...STORE_ORDER]);
   const [limite, setLimite] = useState(3);
   const [perfil, setPerfil] = useState("");
+  const [presupuesto, setPresupuesto] = useState(0);
   const [usarLlm, setUsarLlm] = useState(true);
   const [guardar, setGuardar] = useState(true);
   const [useStream, setUseStream] = useState(true);
@@ -88,6 +89,7 @@ export default function Home() {
       tiendas,
       limite_por_tienda: limite,
       perfil: perfil.trim() || null,
+      presupuesto: presupuesto > 0 ? presupuesto : null,
       usar_llm: usarLlm,
       guardar,
     };
@@ -170,7 +172,7 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
             Agente multiagente
@@ -194,6 +196,8 @@ export default function Home() {
         onLimiteChange={setLimite}
         perfil={perfil}
         onPerfilChange={setPerfil}
+        presupuesto={presupuesto}
+        onPresupuestoChange={setPresupuesto}
         usarLlm={usarLlm}
         onUsarLlmChange={setUsarLlm}
         guardar={guardar}
@@ -233,7 +237,7 @@ export default function Home() {
           {FEATURES.map((feature) => (
             <div
               key={feature.step}
-              className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+              className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
                 {feature.step}

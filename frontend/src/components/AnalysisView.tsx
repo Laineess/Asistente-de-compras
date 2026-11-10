@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/utils";
 import { AudienceList } from "./AudienceList";
 import { ComparisonTable } from "./ComparisonTable";
 import { PriceSummaryCards } from "./PriceSummaryCards";
+import { ProductLinks } from "./ProductLinks";
 import { ReviewScoreGauge } from "./ReviewScoreGauge";
 
 interface AnalysisViewProps {
@@ -55,6 +56,7 @@ export function AnalysisView({
       <ComparisonTable
         options={resultado.opciones}
         recommended={resultado.resumen_precios?.opcion_recomendada}
+        presupuesto={resultado.resumen_precios?.presupuesto}
       />
 
       {(resultado.resumen_resenas || resultado.usuarios_relevantes) && (
@@ -83,6 +85,8 @@ export function AnalysisView({
           </ul>
         </section>
       )}
+
+      <ProductLinks options={resultado.opciones} />
 
       {pasos.length > 0 && (
         <details className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">

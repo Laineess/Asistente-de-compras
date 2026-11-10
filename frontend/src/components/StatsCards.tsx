@@ -40,7 +40,7 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+            className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
           >
             <p className="text-[11px] font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
               {card.label}
@@ -56,7 +56,7 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
       </div>
 
       {stats.por_comercio.length > 0 && (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             Promedio por comercio
           </h2>

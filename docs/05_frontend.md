@@ -49,6 +49,7 @@ frontend/
 │  │  ├─ AnalysisView.tsx
 │  │  ├─ PriceSummaryCards.tsx
 │  │  ├─ ComparisonTable.tsx
+│  │  ├─ ProductLinks.tsx
 │  │  ├─ ReviewScoreGauge.tsx
 │  │  ├─ AudienceList.tsx
 │  │  ├─ HistoryTable.tsx
@@ -93,20 +94,21 @@ data: {"mensaje":"..."}
 
 | Componente | Responsabilidad |
 |---|---|
-| `SearchBar` | Formulario: producto, tiendas, límite, perfil, LLM, persistencia y modo SSE. |
+| `SearchBar` | Formulario: producto, tiendas, límite, perfil, presupuesto con slider, LLM, persistencia y modo SSE. |
 | `StoreSelector` | Selección múltiple de Walmart, Costco y Sam's. |
 | `AgentProgress` | Nodos del grafo y traza de pasos durante la ejecución. |
-| `AnalysisView` | Orquesta recomendación, precios, comparación, reseñas, audiencia y avisos. |
-| `PriceSummaryCards` | Precio mínimo, máximo, promedio y ahorro estimado. |
-| `ComparisonTable` | Tabla responsive de opciones con tienda, precio, score, fuente y enlace. |
-| `ReviewScoreGauge` | Score /10 con indicador circular, pros, contras y fuentes. |
+| `AnalysisView` | Orquesta recomendación, precios, comparación, reseñas, audiencia, enlaces y avisos. |
+| `PriceSummaryCards` | Precio mínimo, máximo, promedio, presupuesto y rango. |
+| `ComparisonTable` | Tabla responsive de opciones con tienda, precio, score, fuente, enlace y marca de presupuesto. |
+| `ProductLinks` | Lista final de enlaces directos a los productos encontrados. |
+| `ReviewScoreGauge` | Score /10 con indicador circular plano, pros, contras y fuentes. |
 | `AudienceList` | Perfiles de comprador con porcentaje y evidencia. |
 | `HistoryTable` | Filas del historial con estados de carga y vacío. |
 | `StatsCards` | Totales, rango de precios y promedio por comercio. |
 
 ## 6. Flujo de la página de análisis
 
-1. El usuario escribe el producto, elige tiendas y ajusta opciones.
+1. El usuario escribe el producto, elige tiendas, ajusta el presupuesto y las demás opciones.
 2. `SearchBar` valida que exista producto y al menos una tienda.
 3. Con SSE activo, `analyzeStream` actualiza `AgentProgress` en cada evento y muestra `AnalysisView` al recibir `done`.
 4. Sin SSE, `analyze` devuelve la respuesta completa y se muestra el mismo resultado.
@@ -126,8 +128,9 @@ La respuesta incluye `resultado`, `pasos`, `errores`, `advertencias` y `filas_gu
 ## 8. Estilos y accesibilidad
 
 - Tailwind CSS 4 con diseño responsive y modo oscuro basado en `prefers-color-scheme`.
+- Tipografía Montserrat y colores planos, sin degradados ni sombras de tarjeta.
 - Layout con cabecera fija, navegación entre `/` y `/history`, y pie de página.
-- Variables CSS `--gauge-track` para el indicador de reseñas.
+- Variables CSS `--gauge-track` y `--slider-track` para el indicador de reseñas y el presupuesto.
 - Formularios con `label`, `sr-only`, foco visible y `role="alert"` en errores.
 - Enlaces externos con `target="_blank"` y `rel="noopener noreferrer"`.
 - Tablas con `scope="col"` y desplazamiento horizontal en pantallas pequeñas.

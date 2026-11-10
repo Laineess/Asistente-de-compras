@@ -24,8 +24,8 @@ Las pruebas no usan claves reales ni red: Tavily, Gemini y el grafo se sustituye
 
 | Archivo | Pruebas | Cobertura funcional |
 |---|---:|---|
-| `test_agents.py` | 12 | Precios, supervisor, validador, audiencia, síntesis, búsqueda y modelos. |
-| `test_api.py` | 10 | Endpoints, SSE, validación y dependencia del repositorio. |
+| `test_agents.py` | 14 | Precios con presupuesto, supervisor, validador, audiencia, síntesis, búsqueda y modelos. |
+| `test_api.py` | 11 | Endpoints, SSE, validación, presupuesto y dependencia del repositorio. |
 | `test_config.py` | 3 | Rutas SQLite y CORS. |
 | `test_db.py` | 11 | Repositorio, filtros, estadísticas, sesión y persistencia. |
 | `test_factory.py` | 2 | Providers Tavily/mock según API key. |
@@ -34,7 +34,7 @@ Las pruebas no usan claves reales ni red: Tavily, Gemini y el grafo se sustituye
 | `test_llm.py` | 7 | `content_to_text`, JSON, `invoke_text/json` y `build_llm`. |
 | `test_providers.py` | 7 | Mock, fallback, deduplicación, precios, rating y títulos. |
 | `test_tavily_provider.py` | 4 | Búsqueda normalizada, filtros, límite y helpers. |
-| **Total** | **64** | |
+| **Total** | **67** | |
 
 `backend/.coveragerc` limita la medición a `app/` y omite las plantillas de prompts.
 
@@ -48,10 +48,11 @@ cd backend
 
 ### Resultado
 
-- **64 pruebas en verde**.
-- **Cobertura total: 90.8%** (ramas incluidas).
-- Archivos con cobertura completa: `api/routes.py`, `api/schemas.py`, `db/repository.py`, `graph/builder.py`, `agents/price_agent.py`, `agents/supervisor.py`, `agents/persistence_agent.py`, `main.py` y `models.py`.
-- Módulos con mayor margen: `agents/audience_agent.py` (75.8%) y `agents/review_agent.py` (76.9%), por ramas de sanitización y prompts que no se ejercitan sin un LLM real.
+- **67 pruebas en verde**.
+- **Cobertura total: 90.5%** (ramas incluidas).
+- Archivos con cobertura completa: `api/routes.py`, `api/schemas.py`, `db/repository.py`, `graph/builder.py`, `agents/supervisor.py`, `agents/persistence_agent.py`, `main.py` y `models.py`.
+- Módulos con mayor margen: `agents/audience_agent.py` (75.8%), `agents/review_agent.py` (76.9%) y `agents/synthesis_agent.py` (77.7%), por ramas de sanitización y prompts que no se ejercitan sin un LLM real.
+- El presupuesto se prueba con opciones dentro y fuera del límite; la API rechaza valores negativos.
 
 ## 3. Frontend
 
@@ -89,9 +90,10 @@ Con el backend en `http://localhost:8000` y el frontend en `http://localhost:300
 1. Abrir `/` y ejecutar una consulta con SSE activo; verificar nodos, traza y resultado.
 2. Repetir con SSE desactivado; el resultado debe ser equivalente.
 3. Cancelar una consulta en curso; no debe quedar un error visible.
-4. Ejecutar con `usar_llm=false` y `guardar=true`; confirmar filas en `/history`.
-5. Filtrar el historial por producto y revisar las tarjetas de estadísticas.
-6. Simular backend caído y verificar el aviso `role="alert"` en ambas páginas.
+4. Ajustar el presupuesto y confirmar que la recomendación, la tabla y los enlaces reflejan el filtro.
+5. Ejecutar con `usar_llm=false` y `guardar=true`; confirmar filas en `/history`.
+6. Filtrar el historial por producto y revisar las tarjetas de estadísticas.
+7. Simular backend caído y verificar el aviso `role="alert"` en ambas páginas.
 
 Comandos de humo:
 
@@ -100,7 +102,7 @@ curl http://localhost:8000/api/health
 curl "http://localhost:8000/api/history?limit=5"
 curl -X POST http://localhost:8000/api/analyze \
   -H "Content-Type: application/json" \
-  -d '{"producto":"laptop","limite_por_tienda":2,"usar_llm":false,"guardar":false}'
+  -d '{"producto":"laptop","limite_por_tienda":2,"presupuesto":13000,"usar_llm":false,"guardar":false}'
 ```
 
 ## 5. Limitaciones

@@ -111,6 +111,48 @@ def test_price_agent_calculates_summary() -> None:
     assert updated["pasos"] == ["precios:ok"]
 
 
+def test_price_agent_filters_options_over_budget() -> None:
+    updated = price_agent(
+        {
+            "opciones": sample_options(),
+            "presupuesto": Decimal("260.00"),
+            "errores": [],
+            "advertencias": [],
+            "pasos": [],
+        }
+    )
+    summary = updated["resumen_precios"]
+
+    assert summary is not None
+    assert summary.precio_final == Decimal("100.00")
+    assert summary.precio_maximo == Decimal("250.00")
+    assert summary.precio_promedio == Decimal("175.00")
+    assert summary.opciones_consideradas == 2
+    assert summary.presupuesto == Decimal("260.00")
+    assert summary.opciones_dentro_presupuesto == 2
+    assert any("1 opción" in warning for warning in updated["advertencias"])
+
+
+def test_price_agent_warns_when_budget_excludes_all_options() -> None:
+    updated = price_agent(
+        {
+            "opciones": sample_options(),
+            "presupuesto": Decimal("50.00"),
+            "errores": [],
+            "advertencias": [],
+            "pasos": [],
+        }
+    )
+    summary = updated["resumen_precios"]
+
+    assert summary is not None
+    assert summary.precio_final == Decimal("100.00")
+    assert summary.opciones_consideradas == 3
+    assert summary.presupuesto == Decimal("50.00")
+    assert summary.opciones_dentro_presupuesto == 0
+    assert any("Ninguna opción" in warning for warning in updated["advertencias"])
+
+
 def test_supervisor_routes_in_order_and_handles_empty_results() -> None:
     assert supervisor({"opciones": [], "errores": [], "pasos": []})["siguiente"] == "buscar"
     assert (

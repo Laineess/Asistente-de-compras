@@ -126,6 +126,29 @@ def test_analyze_returns_result(monkeypatch) -> None:
     assert "persistir:2 filas" in body["pasos"]
 
 
+def test_analyze_forwards_budget(monkeypatch) -> None:
+    captured = {}
+
+    def fake_run_analysis(**kwargs):
+        captured.update(kwargs)
+        return sample_state()
+
+    monkeypatch.setattr("app.api.routes.run_analysis", fake_run_analysis)
+
+    response = client.post(
+        "/api/analyze",
+        json={
+            "producto": "laptop",
+            "presupuesto": 15000,
+            "usar_llm": False,
+            "guardar": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert captured["presupuesto"] == Decimal("15000")
+
+
 def test_analyze_returns_502_without_result(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.api.routes.run_analysis",
@@ -227,6 +250,12 @@ def test_analyze_validates_empty_product_and_limit() -> None:
         json={"producto": "laptop", "limite_por_tienda": 11},
     )
     assert invalid_limit.status_code == 422
+
+    invalid_budget = client.post(
+        "/api/analyze",
+        json={"producto": "laptop", "presupuesto": -1},
+    )
+    assert invalid_budget.status_code == 422
 
 
 def test_history_rejects_empty_product_filter() -> None:

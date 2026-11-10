@@ -13,6 +13,7 @@ class AnalyzeRequest(BaseModel):
     tiendas: list[Store] = Field(default_factory=lambda: list(Store))
     limite_por_tienda: int = Field(default=3, ge=1, le=10)
     perfil: str | None = None
+    presupuesto: Decimal | None = Field(default=None, ge=0)
     usar_llm: bool = True
     guardar: bool = True
 

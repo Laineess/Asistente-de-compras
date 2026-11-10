@@ -196,7 +196,7 @@ cd backend
 ../.venv/Scripts/python.exe -m pytest -q
 ```
 
-Cobertura actual: **64 pruebas** en verde y 90.8% de cobertura de backend. Incluyen providers, agentes, configuración, LLM, factory, Tavily con cliente falso, construcción del grafo, ruteo, fallback con LLM falso, reseñas heurísticas, repositorio, persistencia con SQLite temporal y endpoints de la API (incluido SSE).
+Cobertura actual: **67 pruebas** en verde y 90.5% de cobertura de backend. Incluyen providers, agentes, configuración, LLM, factory, Tavily con cliente falso, construcción del grafo, ruteo, fallback con LLM falso, reseñas heurísticas, repositorio, persistencia con SQLite temporal y endpoints de la API (incluido SSE).
 
 ## 9. Limitaciones y siguientes pasos
 

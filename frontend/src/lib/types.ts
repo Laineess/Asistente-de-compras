@@ -31,6 +31,8 @@ export interface PriceSummary {
   opciones_consideradas: number;
   comercio_mas_barato: string;
   comercio_mas_caro: string;
+  presupuesto?: string | number | null;
+  opciones_dentro_presupuesto?: number | null;
 }
 
 export interface ReviewSummary {
@@ -61,6 +63,7 @@ export interface AnalysisResult {
   resumen_precios?: PriceSummary | null;
   resumen_resenas?: ReviewSummary | null;
   usuarios_relevantes?: AudienceSummary | null;
+  presupuesto?: string | number | null;
   recomendacion: string;
   advertencias: string[];
   filas_guardadas: number;
@@ -73,6 +76,7 @@ export interface AnalyzeRequest {
   tiendas: Store[];
   limite_por_tienda: number;
   perfil?: string | null;
+  presupuesto?: number | null;
   usar_llm: boolean;
   guardar: boolean;
 }

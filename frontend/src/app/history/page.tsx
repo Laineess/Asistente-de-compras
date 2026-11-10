@@ -95,7 +95,7 @@ export default function HistoryPage() {
 
       <form
         onSubmit={handleFilter}
-        className="flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:flex-row dark:border-zinc-800 dark:bg-zinc-900"
+        className="flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-4 sm:flex-row dark:border-zinc-800 dark:bg-zinc-900"
       >
         <label htmlFor="filtro" className="sr-only">
           Producto

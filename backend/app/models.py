@@ -67,6 +67,8 @@ class PriceSummary(BaseModel):
     opciones_consideradas: int = Field(ge=1)
     comercio_mas_barato: str
     comercio_mas_caro: str
+    presupuesto: Decimal | None = Field(default=None, ge=0)
+    opciones_dentro_presupuesto: int | None = Field(default=None, ge=0)
 
 
 class ReviewSummary(BaseModel):
@@ -97,6 +99,7 @@ class AnalysisResult(BaseModel):
     resumen_precios: PriceSummary | None = None
     resumen_resenas: ReviewSummary | None = None
     usuarios_relevantes: AudienceSummary | None = None
+    presupuesto: Decimal | None = None
     recomendacion: str = ""
     advertencias: list[str] = Field(default_factory=list)
     filas_guardadas: int = 0

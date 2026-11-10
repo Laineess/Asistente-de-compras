@@ -253,7 +253,7 @@ El cliente `frontend/src/lib/api.ts` expone `analyze`, `analyzeStream`, `fetchHi
 | Observabilidad | Logs estructurados y traza de pasos en `historial`. |
 | Portabilidad | SQLite/MySQL conmutables y ejecución local en Windows o Linux. |
 | Mantenibilidad | Separación por capas (`graph`, `agents`, `tools`, `providers`, `db`). |
-| Calidad | 64 pruebas backend con 90.8% de cobertura, 11 pruebas frontend, ESLint y build de Next.js. |
+| Calidad | 67 pruebas backend con 90.5% de cobertura, 11 pruebas frontend, ESLint y build de Next.js. |
 
 ## 12. Estructura del repositorio
 

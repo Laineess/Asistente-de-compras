@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Literal, TypedDict
 
 from app.models import (
@@ -18,6 +19,7 @@ class AgentState(TypedDict, total=False):
     consulta: str
     limite_por_tienda: int
     perfil: str | None
+    presupuesto: Decimal | None
     tiendas: list[Store]
     opciones: list[ProductOption]
     errores: list[str]
@@ -37,11 +39,13 @@ def initial_state(
     limite_por_tienda: int = 3,
     perfil: str | None = None,
     tiendas: list[Store] | None = None,
+    presupuesto: Decimal | None = None,
 ) -> AgentState:
     return {
         "consulta": consulta.strip(),
         "limite_por_tienda": limite_por_tienda,
         "perfil": perfil,
+        "presupuesto": presupuesto if presupuesto and presupuesto > 0 else None,
         "tiendas": tiendas or list(Store),
         "opciones": [],
         "errores": [],

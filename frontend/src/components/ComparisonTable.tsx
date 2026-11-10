@@ -5,11 +5,13 @@ import { formatCurrency } from "@/lib/utils";
 interface ComparisonTableProps {
   options: ProductOption[];
   recommended?: string | null;
+  presupuesto?: string | number | null;
 }
 
 export function ComparisonTable({
   options,
   recommended,
+  presupuesto,
 }: ComparisonTableProps) {
   if (options.length === 0) {
     return (
@@ -79,6 +81,10 @@ export function ComparisonTable({
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {options.map((option, index) => {
               const isRecommended = recommended === option.nombre;
+              const overBudget =
+                presupuesto != null &&
+                Number(presupuesto) > 0 &&
+                Number(option.precio) > Number(presupuesto);
               return (
                 <tr
                   key={`${option.comercio}-${option.nombre}-${index}`}
@@ -96,6 +102,11 @@ export function ComparisonTable({
                       {isRecommended && (
                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-700 uppercase dark:bg-emerald-900 dark:text-emerald-200">
                           Recomendado
+                        </span>
+                      )}
+                      {overBudget && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-700 uppercase dark:bg-amber-900 dark:text-amber-200">
+                          Sobre presupuesto
                         </span>
                       )}
                     </div>

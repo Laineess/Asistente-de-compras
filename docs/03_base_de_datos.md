@@ -224,4 +224,4 @@ FLUSH PRIVILEGES;
 .venv/Scripts/python.exe scripts/clear.py --yes
 ```
 
-El agente guarda por defecto al ejecutar `scripts/run_agent.py`; usa `--sin-db` para omitir la persistencia. La suite tiene 64 pruebas y 90.8% de cobertura, incluidas las de repositorio, filtros, estadísticas, sesión, nodo de persistencia, grafo con SQLite temporal y endpoints de la API.
+El agente guarda por defecto al ejecutar `scripts/run_agent.py`; usa `--sin-db` para omitir la persistencia. La suite tiene 67 pruebas y 90.5% de cobertura, incluidas las de repositorio, filtros, estadísticas, sesión, nodo de persistencia, grafo con SQLite temporal y endpoints de la API.

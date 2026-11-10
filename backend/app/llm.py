@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from typing import Any
 
@@ -8,6 +9,8 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 def build_llm() -> BaseChatModel | None:
@@ -18,6 +21,8 @@ def build_llm() -> BaseChatModel | None:
         google_api_key=settings.gemini_api_key,
         temperature=0.2,
         max_output_tokens=2048,
+        request_timeout=settings.gemini_timeout_seconds,
+        retries=settings.gemini_retries,
         model_kwargs={"transport": "rest"},
     )
 
@@ -43,7 +48,8 @@ def invoke_text(llm: BaseChatModel | None, prompt: str) -> str | None:
         return None
     try:
         response = llm.invoke(prompt)
-    except Exception:
+    except Exception as exc:
+        logger.warning("Fallo al invocar el LLM: %s", exc)
         return None
     text = content_to_text(getattr(response, "content", "")).strip()
     return text or None

@@ -59,6 +59,14 @@ export function PriceSummaryCards({ summary }: PriceSummaryCardsProps) {
         Rango de {formatCurrency(summary.rango, summary.moneda)} entre{" "}
         {summary.opciones_consideradas} opciones.
       </p>
+      {summary.presupuesto != null && (
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          Presupuesto máximo:{" "}
+          {formatCurrency(summary.presupuesto, summary.moneda)} ·{" "}
+          {summary.opciones_dentro_presupuesto ?? 0} opción(es) dentro del
+          presupuesto.
+        </p>
+      )}
     </section>
   );
 }

@@ -8,9 +8,12 @@ interface ReviewScoreGaugeProps {
 export function ReviewScoreGauge({ summary }: ReviewScoreGaugeProps) {
   const score = Math.max(0, Math.min(10, summary.score));
   const percentage = score * 10;
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset = circumference * (1 - percentage / 100);
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
       <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         Reseñas
       </h2>
@@ -19,13 +22,33 @@ export function ReviewScoreGauge({ summary }: ReviewScoreGaugeProps) {
       </p>
 
       <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
-        <div
-          className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-full"
-          style={{
-            background: `conic-gradient(#10b981 ${percentage}%, var(--gauge-track) 0)`,
-          }}
-        >
-          <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-white dark:bg-zinc-900">
+        <div className="relative h-28 w-28 shrink-0">
+          <svg
+            viewBox="0 0 100 100"
+            className="h-28 w-28 -rotate-90"
+            aria-hidden="true"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="none"
+              stroke="var(--gauge-track)"
+              strokeWidth="10"
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="none"
+              stroke="#059669"
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={dashOffset}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
               {formatScore(score)}
             </span>
