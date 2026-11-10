@@ -1,0 +1,204 @@
+{
+  "tienda": "walmart",
+  "productos": [
+    {
+      "nombre": "Laptop Lenovo IdeaPad 3 15.6\" Ryzen 5 8GB 512GB",
+      "precio": 12999.0,
+      "moneda": "MXN",
+      "url": "https://www.walmart.com.mx/search?q=Laptop+Lenovo+IdeaPad+3+15.6%22+Ryzen+5+8GB+512GB",
+      "descripcion": "Laptop para estudio y trabajo con AMD Ryzen 5, 8 GB de RAM y SSD de 512 GB. Pantalla Full HD de 15.6 pulgadas.",
+      "calificacion": 4.3,
+      "tags": [
+        "laptop",
+        "computadora",
+        "lenovo",
+        "ideapad",
+        "ryzen",
+        "portatil"
+      ],
+      "resenas": [
+        {
+          "autor": "Ana R.",
+          "texto": "Buena laptop para la escuela; arranca rápido y la batería aguanta la jornada.",
+          "calificacion": 4.5
+        },
+        {
+          "autor": "Luis M.",
+          "texto": "La pantalla se ve bien, aunque el ventilador suena en tareas pesadas.",
+          "calificacion": 4.0
+        },
+        {
+          "autor": "María G.",
+          "texto": "Relación calidad-precio excelente para ofimática y clases en línea.",
+          "calificacion": 4.5
+        }
+      ]
+    },
+    {
+      "nombre": "Laptop HP Pavilion 15 Intel Core i5 8GB 512GB",
+      "precio": 14999.0,
+      "moneda": "MXN",
+      "url": "https://www.walmart.com.mx/search?q=Laptop+HP+Pavilion+15+Intel+Core+i5+8GB+512GB",
+      "descripcion": "Laptop HP con Intel Core i5, 8 GB de RAM, SSD de 512 GB y pantalla de 15.6 pulgadas.",
+      "calificacion": 4.4,
+      "tags": [
+        "laptop",
+        "computadora",
+        "hp",
+        "pavilion",
+        "intel",
+        "portatil"
+      ],
+      "resenas": [
+        {
+          "autor": "Carlos P.",
+          "texto": "Muy buena para trabajo; el teclado es cómodo y tiene buena autonomía.",
+          "calificacion": 4.5
+        },
+        {
+          "autor": "Sofía L.",
+          "texto": "El diseño es elegante, aunque pesa un poco para llevarla diario.",
+          "calificacion": 4.0
+        },
+        {
+          "autor": "Diego H.",
+          "texto": "Rápida para multitarea y videollamadas.",
+          "calificacion": 4.5
+        }
+      ]
+    },
+    {
+      "nombre": "Laptop ASUS Vivobook 15 Intel Core i3 8GB 256GB",
+      "precio": 9999.0,
+      "moneda": "MXN",
+      "url": "https://www.walmart.com.mx/search?q=Laptop+ASUS+Vivobook+15+Intel+Core+i3+8GB+256GB",
+      "descripcion": "Laptop económica para tareas básicas con Intel Core i3, 8 GB de RAM y SSD de 256 GB.",
+      "calificacion": 4.0,
+      "tags": [
+        "laptop",
+        "computadora",
+        "asus",
+        "vivobook",
+        "intel",
+        "portatil"
+      ],
+      "resenas": [
+        {
+          "autor": "Paola V.",
+          "texto": "Cumple para la escuela y navegación; no esperes gaming.",
+          "calificacion": 4.0
+        },
+        {
+          "autor": "Jorge T.",
+          "texto": "Buena por el precio, aunque el almacenamiento se llena rápido.",
+          "calificacion": 3.5
+        },
+        {
+          "autor": "Elena C.",
+          "texto": "Ligera y con buen teclado para escribir.",
+          "calificacion": 4.0
+        }
+      ]
+    },
+    {
+      "nombre": "Smartphone Samsung Galaxy A55 5G 128GB",
+      "precio": 8499.0,
+      "moneda": "MXN",
+      "url": "https://www.walmart.com.mx/search?q=Smartphone+Samsung+Galaxy+A55+5G+128GB",
+      "descripcion": "Teléfono Samsung con pantalla AMOLED, cámara de 50 MP y conectividad 5G.",
+      "calificacion": 4.5,
+      "tags": [
+        "smartphone",
+        "celular",
+        "telefono",
+        "samsung",
+        "galaxy",
+        "a55",
+        "5g"
+      ],
+      "resenas": [
+        {
+          "autor": "Fernanda S.",
+          "texto": "Excelente cámara y pantalla; la batería dura todo el día.",
+          "calificacion": 4.5
+        },
+        {
+          "autor": "Ricardo N.",
+          "texto": "Buen rendimiento para el precio, aunque incluye cargador lento.",
+          "calificacion": 4.0
+        },
+        {
+          "autor": "Valeria D.",
+          "texto": "Se siente premium y la pantalla se ve muy bien.",
+          "calificacion": 4.5
+        }
+      ]
+    },
+    {
+      "nombre": "Audífonos Sony WH-CH720N Bluetooth con cancelación de ruido",
+      "precio": 2299.0,
+      "moneda": "MXN",
+      "url": "https://www.walmart.com.mx/search?q=Aud%C3%ADfonos+Sony+WH-CH720N+Bluetooth+con+cancelaci%C3%B3n+de+ruido",
+      "descripcion": "Audífonos inalámbricos con cancelación de ruido, hasta 35 horas de batería y micrófono integrado.",
+      "calificacion": 4.4,
+      "tags": [
+        "audifonos",
+        "auriculares",
+        "sony",
+        "bluetooth",
+        "cancelacion",
+        "ruido"
+      ],
+      "resenas": [
+        {
+          "autor": "Andrés F.",
+          "texto": "La cancelación de ruido funciona bien para el precio.",
+          "calificacion": 4.5
+        },
+        {
+          "autor": "Lucía B.",
+          "texto": "Cómodos por horas y con buena batería.",
+          "calificacion": 4.0
+        },
+        {
+          "autor": "Tomás R.",
+          "texto": "El sonido es equilibrado, aunque los graves podrían ser más potentes.",
+          "calificacion": 4.0
+        }
+      ]
+    },
+    {
+      "nombre": "Televisor LG 55\" 4K UHD Smart TV",
+      "precio": 9999.0,
+      "moneda": "MXN",
+      "url": "https://www.walmart.com.mx/search?q=Televisor+LG+55%22+4K+UHD+Smart+TV",
+      "descripcion": "Televisor LG de 55 pulgadas, resolución 4K, sistema webOS y control por voz.",
+      "calificacion": 4.6,
+      "tags": [
+        "televisor",
+        "tv",
+        "lg",
+        "4k",
+        "smart",
+        "pantalla"
+      ],
+      "resenas": [
+        {
+          "autor": "Gabriela M.",
+          "texto": "Imagen muy nítida y el sistema es fácil de usar.",
+          "calificacion": 4.5
+        },
+        {
+          "autor": "Héctor J.",
+          "texto": "Buena para streaming y consolas; el sonido es aceptable.",
+          "calificacion": 4.0
+        },
+        {
+          "autor": "Patricia O.",
+          "texto": "Excelente relación calidad-precio en 55 pulgadas.",
+          "calificacion": 5.0
+        }
+      ]
+    }
+  ]
+}
