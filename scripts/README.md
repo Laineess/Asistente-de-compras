@@ -11,6 +11,15 @@ Utilidades de desarrollo y entrega.
 | `clear.py` | Vaciar `resultados` (pide confirmación) | 5 |
 | `history.py` | Mostrar el historial persistido | 5 |
 | `export_pdf.py` | Generar el PDF de investigación | 9 |
+| `run_bot.py` | Arrancar el bot de Telegram en local | 11 |
+
+## run_bot.py
+
+```bash
+.venv/Scripts/python.exe scripts/run_bot.py
+```
+
+Requiere `TELEGRAM_BOT_TOKEN` y `TELEGRAM_ALLOWED_USER_IDS` en `.env`.
 
 ## run_agent.py
 

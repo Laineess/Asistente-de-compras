@@ -206,6 +206,18 @@ curl "http://localhost:8000/api/stats?producto=laptop"
 - Base de datos: `DATABASE_URL` (SQLite por defecto).
 - Las claves `GEMINI_API_KEY` y `TAVILY_API_KEY` viven en `.env`, ignorado por git.
 
+## Consumo desde el bot de Telegram
+
+El bot **no** llama a estos endpoints. Importa el servicio del grafo y ejecuta `run_analysis()` directamente en un hilo para no bloquear el *event loop* de Telegram. Por eso:
+
+- No requiere que FastAPI esté levantado para funcionar.
+- No hay cambios de contrato ni endpoints nuevos por el bot.
+- La validación de entrada se hace en el parser y en los modelos Pydantic del grafo.
+- La persistencia y el historial son los mismos: `resultados`, `GET /api/history` y `GET /api/stats` siguen disponibles si se despliega la API.
+- El modo `fast` equivale a `usar_llm=false`; `detallado` equivale a `usar_llm=true`.
+
+El diseño completo está en [`10_bot_telegram.md`](10_bot_telegram.md).
+
 ## Pruebas
 
-`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **67 pruebas** en verde y 90.5% de cobertura.
+`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **143 pruebas** en verde y 90.6% de cobertura (incluye 76 del bot).

@@ -6,7 +6,9 @@ Asistente que ayuda a decidir qué producto comprar consultando precios y reseñ
 
 - **Backend:** Python 3.12, FastAPI, LangGraph, LangChain, Gemini, Tavily, SQLAlchemy.
 - **Frontend:** Next.js 16, TypeScript, Tailwind CSS.
+- **Bot:** `python-telegram-bot` con voz local (`faster-whisper` + `edge-tts`).
 - **Base de datos:** SQLite en desarrollo / MySQL en la entrega (configurable con `DATABASE_URL`).
+- **Despliegue del bot:** Ubuntu 24/7 con `venv` + `systemd`, sin Docker.
 - **Documentación:** Markdown y exportación a PDF con WeasyPrint.
 
 ## Estructura
@@ -25,15 +27,19 @@ analisis-compras/
 │  │  ├─ tools/       # herramientas de cada agente
 │  │  ├─ providers/   # Tavily + mock por tienda
 │  │  ├─ db/          # modelos ORM, sesión, repositorio e init.sql
+│  │  ├─ bot/         # bot de Telegram, voz y sesiones
 │  │  └─ prompts/     # plantillas de los agentes
 │  ├─ data/mock/      # datos de respaldo
 │  ├─ tests/
-│  └─ requirements.txt
+│  ├─ requirements.txt
+│  ├─ requirements-bot.txt
+│  └─ requirements-voice.txt
 ├─ frontend/
 │  ├─ src/app/        # páginas / y /history
 │  ├─ src/components/ # componentes de UI
 │  └─ src/lib/        # tipos, cliente API y utilidades
 ├─ docs/              # documentación del proyecto
+├─ deploy/            # unidad systemd del bot
 ├─ scripts/           # utilidades
 ├─ .env.example
 └─ README.md
@@ -42,8 +48,10 @@ analisis-compras/
 ## Requisitos
 
 - Python 3.12+
-- Node.js 20+
+- Node.js 20+ (solo para el frontend)
 - API keys: `GEMINI_API_KEY` (Google AI Studio) y `TAVILY_API_KEY`.
+- Bot: token de BotFather y tu ID numérico de Telegram.
+- Voz: sin binarios externos; `faster-whisper` y `edge-tts` usan PyAV para decodificar y generar OGG/Opus.
 
 ## Configuración
 
@@ -67,6 +75,31 @@ analisis-compras/
 
 - Backend: http://localhost:8000 (Swagger en `/docs`)
 - Frontend: http://localhost:3000
+
+## Bot de Telegram
+
+El bot es la interfaz principal para móvil: acepta texto y notas de voz, pregunta los datos que falten, confirma antes de ejecutar y devuelve enlaces y reseñas del top 3.
+
+```bash
+pip install -r backend/requirements.txt
+pip install -r backend/requirements-bot.txt
+# Voz opcional:
+# pip install -r backend/requirements-voice.txt
+.venv/Scripts/python.exe scripts/run_bot.py
+```
+
+Variables mínimas en `.env`:
+
+```env
+TELEGRAM_BOT_TOKEN=123456:ABC...
+TELEGRAM_ALLOWED_USER_IDS=123456789
+BOT_DEFAULT_MODE=fast
+```
+
+- Modo `fast` (por defecto): sin Gemini, para no agotar la cuota gratuita.
+- Modo `detallado`: usa Gemini; se activa con `/modo`.
+- Despliegue 24/7 en Ubuntu con `systemd`, sin Docker: [`docs/10_bot_telegram.md`](docs/10_bot_telegram.md).
+- El bot no requiere FastAPI ni el frontend.
 
 ## API
 
@@ -114,6 +147,8 @@ El agente guarda una fila por opción analizada al ejecutar `scripts/run_agent.p
 - [Frontend](docs/05_frontend.md)
 - [Decisiones técnicas (ADRs)](docs/08_decisiones_tecnicas.md)
 - [Pruebas](docs/09_pruebas.md)
+- [Bot de Telegram](docs/10_bot_telegram.md)
+- [Manual de usuario](docs/06_manual_usuario.md)
 - Índice completo: [docs/](docs/README.md)
 
 ## Pruebas
@@ -148,7 +183,7 @@ Prueba del agente multiagente:
 
 > Gemini free tier: 20 solicitudes/día. El agente usa heurísticas si se agota la cuota.
 
-La suite completa tiene 67 pruebas en verde y una cobertura de backend de 90.5%.
+La suite completa tiene 143 pruebas en verde y una cobertura de backend de 90.6%.
 
 Verificación del frontend:
 
@@ -160,6 +195,8 @@ npm run build
 ```
 
 El frontend suma 11 pruebas unitarias con Vitest.
+
+El bot de Telegram suma 76 pruebas propias (parser, conversación, sesiones, formateo, voz y handlers). Detalle en [`docs/09_pruebas.md`](docs/09_pruebas.md).
 
 ## Estado del proyecto
 
@@ -173,5 +210,6 @@ El frontend suma 11 pruebas unitarias con Vitest.
 - [x] Fase 8 — Pruebas y QA
 - [ ] Fase 9 — Investigación y PDF
 - [ ] Fase 10 — Empaquetado y entrega
+- [x] Extensión — Bot de Telegram (texto, voz, sesiones y `systemd` listos)
 
-La documentación vive en [`docs/`](docs/README.md).
+La documentación vive en [`docs/`](docs/README.md). El bot se documenta en [`docs/10_bot_telegram.md`](docs/10_bot_telegram.md).

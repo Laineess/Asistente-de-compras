@@ -1,0 +1,5 @@
+-r requirements-bot.txt
+faster-whisper>=1.0
+edge-tts>=7.0
+av>=11
+numpy>=1.26

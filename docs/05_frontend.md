@@ -1,6 +1,6 @@
 # Frontend
 
-> Estado: completado en la Fase 7. Implementado con Next.js 16, React 19, TypeScript y Tailwind CSS 4.
+> Estado: completado en la Fase 7. Implementado con Next.js 16, React 19, TypeScript y Tailwind CSS 4. La interfaz web es **opcional** para el uso móvil: el bot de Telegram es el cliente principal.
 
 ## 1. Stack y configuración
 
@@ -166,3 +166,11 @@ Verificación actual:
 - Contrato de la API: [`04_api.md`](04_api.md).
 - Visión general: [`01_arquitectura.md`](01_arquitectura.md).
 - Guía de Next.js 16 incluida en `frontend/AGENTS.md`.
+
+## 12. Relación con el bot de Telegram
+
+- El bot no usa el frontend ni la API HTTP; ejecuta el grafo directamente.
+- La web sigue siendo útil para escritorio, comparación detallada e historial.
+- El despliegue del bot no requiere Node.js, `npm run build` ni `next start`.
+- Si se despliegan ambos, el frontend se sirve aparte y sigue apuntando a FastAPI con `NEXT_PUBLIC_API_URL`.
+- La guía del bot está en [`10_bot_telegram.md`](10_bot_telegram.md).

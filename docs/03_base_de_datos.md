@@ -224,4 +224,35 @@ FLUSH PRIVILEGES;
 .venv/Scripts/python.exe scripts/clear.py --yes
 ```
 
-El agente guarda por defecto al ejecutar `scripts/run_agent.py`; usa `--sin-db` para omitir la persistencia. La suite tiene 67 pruebas y 90.5% de cobertura, incluidas las de repositorio, filtros, estadísticas, sesión, nodo de persistencia, grafo con SQLite temporal y endpoints de la API.
+El agente guarda por defecto al ejecutar `scripts/run_agent.py`; usa `--sin-db` para omitir la persistencia. La suite tiene 143 pruebas y 90.6% de cobertura, incluidas las de repositorio, filtros, estadísticas, sesión, nodo de persistencia, grafo con SQLite temporal, endpoints de la API, sesiones y voz del bot.
+
+## 12. Sesiones del bot de Telegram
+
+El bot necesita recordar el estado de una conversación (producto, tiendas, presupuesto, perfil, modo y preferencia de voz). Ese estado **no** pertenece a `resultados` y se guarda en una base SQLite separada:
+
+| Elemento | Valor |
+|---|---|
+| Archivo | `backend/data/bot_sessions.db` |
+| Motor | SQLite con `aiosqlite` |
+| Unidad | Una fila por `user_id`/`chat_id` |
+| Expiración | `BOT_SESSION_TTL_HOURS` (24 h por defecto) |
+
+Campos previstos:
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `user_id` | `INTEGER PRIMARY KEY` | ID numérico de Telegram (allowlist). |
+| `chat_id` | `INTEGER` | Chat activo. |
+| `estado` | `TEXT` | `idle`, `recolectando`, `confirmando`, `ejecutando`, `resultados`. |
+| `slots` | `TEXT` (JSON) | Producto, tiendas, presupuesto, perfil y límite. |
+| `modo` | `TEXT` | `fast` o `detallado`. |
+| `voz` | `TEXT` | `auto`, `siempre` o `nunca`. |
+| `ultimo_resultado` | `TEXT` (JSON, opcional) | Último resultado para seguimiento. |
+| `actualizado_en` | `DATETIME` | Última actividad; base para expirar. |
+
+Notas:
+
+- `resultados` sigue siendo la única tabla de negocio persistente; el bot la usa con `ResultadoRepository`.
+- Las sesiones son efímeras y se pueden borrar sin perder el historial de compras.
+- No se guardan audios ni transcripciones; solo el texto que el usuario decide analizar.
+- El detalle del flujo y la configuración está en [`10_bot_telegram.md`](10_bot_telegram.md).

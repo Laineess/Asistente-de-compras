@@ -1,0 +1,27 @@
+[Unit]
+Description=Bot de Telegram - Analisis de Compras
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=comprasbot
+Group=comprasbot
+WorkingDirectory=/opt/analisis-compras/backend
+EnvironmentFile=/opt/analisis-compras/.env
+Environment=PYTHONUNBUFFERED=1
+Environment=HF_HOME=/opt/analisis-compras/.cache/huggingface
+Environment=XDG_CACHE_HOME=/opt/analisis-compras/.cache
+ExecStart=/opt/analisis-compras/.venv/bin/python -m app.bot.main
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/analisis-compras/backend/data /opt/analisis-compras/.cache
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

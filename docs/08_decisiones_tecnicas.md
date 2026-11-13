@@ -222,3 +222,93 @@ No implementar autenticación en el MVP. Restringir CORS y validar todas las ent
 **Consecuencias**
 - Positivas: menos complejidad y foco en el agente.
 - Negativas: no apto para producción. Se documenta como limitación explícita.
+
+---
+
+## ADR-011 — Bot de Telegram como interfaz principal
+
+- **Estado:** Aceptada
+- **Fecha:** 2026-11-12
+
+**Contexto**
+La interfaz web funciona en escritorio, pero el uso diario ocurre en el móvil. Se necesita una experiencia sin instalar apps, con texto y voz, y sin exponer un servidor web propio.
+
+**Decisión**
+Implementar un bot privado de Telegram con `python-telegram-bot`, *long polling* y allowlist de IDs. El bot reutiliza `run_analysis()` y no pasa por FastAPI. Pregunta los datos faltantes, confirma antes de ejecutar y devuelve enlaces y el top 3.
+
+**Alternativas consideradas**
+- Web app móvil: requiere dominio, TLS, hosting y autenticación.
+- WhatsApp Business API: más fricción y costos.
+- App nativa: sobredimensionada para el alcance.
+- Bot público: riesgo de abuso y consumo de cuota.
+
+**Consecuencias**
+- Positivas: acceso inmediato, notificaciones, voz nativa, sin puertos públicos ni frontend para móvil.
+- Negativas: dependencia de Telegram, sin cifrado E2E para bots y límites de formato (4096 caracteres). Se mitiga dividiendo mensajes y usando allowlist/rate limit.
+
+---
+
+## ADR-012 — Voz local con faster-whisper y edge-tts
+
+- **Estado:** Aceptada
+- **Fecha:** 2026-11-12
+
+**Contexto**
+El usuario quiere dictar consultas y recibir audio corto por producto sin pagar APIs de voz ni enviar audio a servicios adicionales.
+
+**Decisión**
+Transcribir con `faster-whisper` (`small`, CPU, `int8`, español) y sintetizar con `edge-tts` (`es-MX-JorgeNeural`). La entrada se decodifica con PyAV y la salida se transcodifica a OGG/Opus con PyAV; si falla, se envía MP3. No se requiere `ffmpeg` del sistema. El audio es opcional y siempre va acompañado de texto.
+
+**Alternativas consideradas**
+- Whisper API de OpenAI: buena calidad, pero costo y dependencia externa.
+- Google Speech-to-Text/TTS: costo y configuración de credenciales.
+- Solo texto: más simple, pero no cumple el requisito de voz.
+- Modelo `medium`/`large`: mejor transcripción, pero demasiado pesado para un VPS modesto.
+
+**Consecuencias**
+- Positivas: sin costo por uso, privacidad de la transcripción, control del modelo y sin dependencia de binarios externos.
+- Negativas: consumo de CPU/RAM, descarga inicial del modelo y calidad variable. Se mitiga con `small`, límite de duración y fallback a texto si algo falla.
+
+---
+
+## ADR-013 — Despliegue con systemd sin Docker
+
+- **Estado:** Aceptada
+- **Fecha:** 2026-11-12
+
+**Contexto**
+El bot debe estar disponible 24/7 en un VPS Ubuntu. Docker añade capas y complejidad que no se necesitan para un único proceso Python.
+
+**Decisión**
+Desplegar con un usuario sin privilegios, `venv`, un servicio `systemd` con `Restart=on-failure` y *long polling*. No se abren puertos para el bot; solo se requiere salida HTTPS.
+
+**Alternativas consideradas**
+- Docker/Compose: reproducible, pero más piezas y permisos.
+- `nohup` o `screen`: simple, pero sin reinicio ni logs gestionados.
+- Kubernetes: sobredimensionado.
+
+**Consecuencias**
+- Positivas: operación simple, logs con `journalctl`, arranque automático y menos superficie de ataque.
+- Negativas: dependencia del sistema operativo y actualización manual. Se documenta el procedimiento en `10_bot_telegram.md`.
+
+---
+
+## ADR-014 — Modo `fast` por defecto
+
+- **Estado:** Aceptada
+- **Fecha:** 2026-11-12
+
+**Contexto**
+El free tier de Gemini permite 20 solicitudes/día. Un bot conversacional puede agotarlo con facilidad y dejar al usuario sin respuestas.
+
+**Decisión**
+Usar `fast` por defecto: búsqueda con Tavily/mock y heurísticas, sin Gemini. El modo `detallado` se activa manualmente con `/modo` y consume cuota. Si Gemini falla en `detallado`, se cae a heurísticas.
+
+**Alternativas consideradas**
+- `detallado` por defecto: mejor texto, pero agota la cuota rápido.
+- Solo heurísticas: estable, pero sin la riqueza del LLM.
+- Caché de respuestas: útil, pero no elimina el problema en consultas nuevas.
+
+**Consecuencias**
+- Positivas: disponibilidad estable, respuestas rápidas y menor costo.
+- Negativas: recomendaciones menos elaboradas por defecto. El usuario puede subir de modo cuando lo necesite.

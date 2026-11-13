@@ -44,3 +44,18 @@ Términos usados en la documentación y el código del proyecto.
 | **Token** | Unidad de texto que procesa un LLM; afecta costo y límite de contexto. |
 | **Embedding** | Representación vectorial de texto usada para búsqueda semántica. |
 | **Trazabilidad (tracing)** | Registro detallado de pasos, entradas y salidas de un agente. |
+| **Bot** | Programa que interactúa por chat y ejecuta acciones de forma automatizada; en este proyecto, el cliente de Telegram. |
+| **Telegram Bot API** | API de Telegram para crear y operar bots mediante un token. |
+| **Long polling** | Técnica en la que el bot consulta periódicamente a Telegram; no requiere webhook ni puerto público. |
+| **Allowlist** | Lista explícita de usuarios autorizados; el resto se rechaza. |
+| **Slot** | Dato necesario o útil para ejecutar una consulta (producto, tiendas, presupuesto, perfil). |
+| **Slot filling** | Proceso de extraer y completar slots conversacionalmente antes de ejecutar. |
+| **STT** | *Speech-to-Text*. Transcripción de audio a texto; aquí con `faster-whisper`. |
+| **TTS** | *Text-to-Speech*. Síntesis de voz a partir de texto; aquí con `edge-tts`. |
+| **Nota de voz** | Mensaje de audio de Telegram en formato OGG/Opus, distinto de un archivo de audio. |
+| **systemd** | Gestor de servicios de Linux; mantiene el bot activo y lo reinicia si falla. |
+| **Unidad systemd** | Archivo `.service` que describe cómo ejecutar un proceso. |
+| **VPS** | Servidor privado virtual donde se despliega el bot 24/7. |
+| **Rate limit** | Límite de solicitudes por usuario y periodo para evitar abuso. |
+| **Modo `fast`** | Ejecución sin Gemini; usa búsqueda y heurísticas deterministas. |
+| **Modo `detallado`** | Ejecución con Gemini para enriquecer reseñas, audiencia y síntesis. |

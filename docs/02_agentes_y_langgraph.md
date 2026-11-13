@@ -196,11 +196,26 @@ cd backend
 ../.venv/Scripts/python.exe -m pytest -q
 ```
 
-Cobertura actual: **67 pruebas** en verde y 90.5% de cobertura de backend. Incluyen providers, agentes, configuración, LLM, factory, Tavily con cliente falso, construcción del grafo, ruteo, fallback con LLM falso, reseñas heurísticas, repositorio, persistencia con SQLite temporal y endpoints de la API (incluido SSE).
+Cobertura actual: **143 pruebas** en verde y 90.6% de cobertura de backend (76 del bot). Incluyen providers, agentes, configuración, LLM, factory, Tavily con cliente falso, construcción del grafo, ruteo, fallback con LLM falso, reseñas heurísticas, repositorio, persistencia con SQLite temporal y endpoints de la API (incluido SSE).
+
+### 8.1 Ejecución desde el bot de Telegram
+
+El bot reutiliza el mismo grafo sin duplicar agentes:
+
+- Llama a `run_analysis()` en un hilo (`asyncio.to_thread`) para no bloquear `python-telegram-bot`.
+- En modo `fast` envía `usar_llm=False`; en `detallado`, `usar_llm=True`.
+- Mantiene `persist=True` salvo que el usuario desactive el guardado; las filas se insertan igual en `resultados`.
+- Agrupa las opciones por producto normalizado y elige el recomendado más dos alternativas.
+- Para las reseñas del top 3 reutiliza `heuristic_review` sobre las reseñas de cada grupo, sin llamadas adicionales a Gemini.
+- Si el grafo devuelve `resultado=None`, el bot muestra los errores y ofrece reintentar en modo `fast`.
+- La traza `pasos` se resume en un mensaje corto; no se envía el JSON completo.
+
+La implementación del bot (texto, voz y máquina de estados) está en [`10_bot_telegram.md`](10_bot_telegram.md).
 
 ## 9. Limitaciones y siguientes pasos
 
 - La persistencia en `analisis_compras.resultados` y su consulta por API están implementadas (`/api/history`, `/api/stats`).
 - La API FastAPI se conecta al grafo en la Fase 6; ver [`04_api.md`](04_api.md).
 - Los precios reales dependen de Tavily; conviene validarlos antes de comprar.
-- La cuota gratuita de Gemini limita las ejecuciones con LLM por día; el modo `--sin-llm` es la alternativa estable.
+- La cuota gratuita de Gemini limita las ejecuciones con LLM por día; el modo `--sin-llm` y el modo `fast` del bot son la alternativa estable.
+- El bot no añade agentes nuevos: reutiliza el grafo. La conversación y la voz viven en `backend/app/bot/`, no en `agents/`.

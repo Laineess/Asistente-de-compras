@@ -10,10 +10,11 @@
 | [`03_base_de_datos.md`](03_base_de_datos.md) | Completado | 2-5 |
 | [`04_api.md`](04_api.md) | Completado | 6 |
 | [`05_frontend.md`](05_frontend.md) | Completado | 7 |
-| [`06_manual_usuario.md`](06_manual_usuario.md) | Pendiente | 10 |
+| [`06_manual_usuario.md`](06_manual_usuario.md) | Completado (texto y voz) | 10 |
 | [`07_investigacion_agentes.md`](07_investigacion_agentes.md) / `.pdf` | Pendiente | 9 |
 | [`08_decisiones_tecnicas.md`](08_decisiones_tecnicas.md) | Completado | 2 |
 | [`09_pruebas.md`](09_pruebas.md) | Completado | 8 |
+| [`10_bot_telegram.md`](10_bot_telegram.md) | Completado (texto, voz y despliegue) | 11 |
 
 ## Estado de la Fase 2
 
@@ -64,11 +65,18 @@
 
 ## Estado de la Fase 8
 
-- 67 pruebas backend en verde y 90.5% de cobertura con `pytest-cov`.
+- 143 pruebas backend en verde y 90.6% de cobertura con `pytest-cov` (incluye 76 del bot).
 - Pruebas nuevas de agentes, configuración, LLM, factory, sesión y Tavily.
 - 11 pruebas frontend con Vitest para utilidades y parser SSE.
 - `npm test`, `npm run lint` y `npm run build` sin errores.
 - Estrategia, comandos y limitaciones documentados en [`09_pruebas.md`](09_pruebas.md).
+
+## Extensión: Bot de Telegram
+
+- Bot privado con texto, voz, allowlist y modo `fast` por defecto.
+- Reutiliza el grafo y la persistencia existentes; no requiere FastAPI ni el frontend.
+- Despliegue en Ubuntu 24/7 con `venv` + `systemd`, sin Docker; unidad en `deploy/compras-bot.service`.
+- Documento de referencia: [`10_bot_telegram.md`](10_bot_telegram.md).
 
 ## Convenciones
 

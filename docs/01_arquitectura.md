@@ -4,6 +4,8 @@
 
 Sistema multiagente que ayuda a decidir qué producto comprar consultando precios y reseñas en **Walmart**, **Costco** y **Sam's**, y registrando cada consulta en una base de datos.
 
+La extensión principal para uso diario es un **bot privado de Telegram** (texto y voz) que reutiliza el mismo grafo. La interfaz web se conserva para escritorio y demostración.
+
 El sistema debe:
 
 1. Buscar productos en las tiendas seleccionadas.
@@ -22,20 +24,27 @@ El sistema debe:
 - Análisis de audiencia.
 - Persistencia en SQLite (desarrollo) o MySQL (entrega).
 - Interfaz web y API HTTP.
+- Bot privado de Telegram con texto y voz, allowlist y respuesta con enlaces.
+- Despliegue 24/7 en Ubuntu con `venv` y `systemd`, sin Docker.
 
 **Fuera de alcance**
 
 - Compra o pago real.
-- Autenticación de usuarios finales.
+- Autenticación de usuarios finales más allá de la allowlist del bot.
 - Scraping masivo o crawlers distribuidos.
 - Entrenamiento de modelos propios.
+- Bot público o multiinquilino.
 
 ## 3. Visión general (contenedores)
 
 ```mermaid
 flowchart LR
     U["Usuario"] --> FE["Frontend Next.js 16"]
+    U --> TG["Telegram"]
+    TG -->|"long polling"| BOT["Bot Python"]
+    BOT --> V["Voz: faster-whisper + edge-tts"]
     FE -->|"HTTP JSON / SSE"| API["API FastAPI"]
+    BOT --> G
     API --> G["Orquestador LangGraph"]
     G --> LLM["Gemini"]
     G --> AG["Agentes especializados"]
@@ -45,6 +54,7 @@ flowchart LR
     G --> DB[("SQLite / MySQL")]
     API --> DB
     API --> FE
+    BOT --> SDB[("bot_sessions.db")]
 ```
 
 **Responsabilidades por contenedor**
@@ -52,11 +62,15 @@ flowchart LR
 | Contenedor | Tecnología | Responsabilidad |
 |---|---|---|
 | Frontend | Next.js 16, TypeScript, Tailwind CSS | Captura el producto, muestra comparación, score e historial. |
+| Telegram | Telegram Bot API | Canal de chat y notas de voz; no requiere puerto público. |
+| Bot | `python-telegram-bot` | Conversación, slots, confirmación, allowlist y formato de respuesta. |
+| Voz | `faster-whisper` + `edge-tts` | Transcribir notas de voz y generar audios cortos por producto. |
 | API | FastAPI, Pydantic | Expone endpoints, valida entrada/salida y orquesta la ejecución del grafo. |
 | Orquestador | LangGraph `StateGraph` | Controla el flujo entre agentes, ciclos y persistencia. |
 | Agentes | LangChain + Gemini | Buscar, comparar, analizar reseñas y analizar audiencia. |
 | Providers | Python + Tavily SDK | Obtener datos reales con respaldo mock. |
 | Persistencia | SQLAlchemy + SQLite/MySQL | Guardar y consultar la tabla `resultados`. |
+| Sesiones del bot | SQLite | Guardar estado efímero de cada conversación. |
 | LLM | Google Gemini | Razonamiento y generación de síntesis. |
 
 ## 4. Flujo de una consulta
@@ -104,6 +118,38 @@ sequenceDiagram
 ```
 
 El frontend usa `POST /api/analyze` para obtener el resultado completo o `POST /api/analyze/stream` para mostrar el avance por SSE.
+
+### 4.1 Flujo desde Telegram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant TG as Telegram
+    participant BOT as Bot
+    participant STT as faster-whisper
+    participant G as LangGraph
+    participant DB as Base de datos
+
+    U->>TG: Texto o nota de voz
+    TG->>BOT: update (long polling)
+    alt Entrada de voz
+        BOT->>STT: transcribir audio
+        STT-->>BOT: texto
+        BOT-->>U: confirmar transcripción
+    end
+    BOT->>BOT: extraer slots
+    BOT-->>U: pedir datos faltantes
+    BOT-->>U: resumen + botones
+    U->>BOT: Analizar
+    BOT->>G: run_analysis() en hilo
+    G->>DB: guardar opciones
+    G-->>BOT: AnalysisResult
+    BOT-->>U: recomendación, enlaces y top 3
+    BOT-->>U: audios cortos (opcional)
+```
+
+El bot no usa FastAPI: llama directamente al servicio del grafo. El detalle del flujo, comandos, voz y despliegue está en [`10_bot_telegram.md`](10_bot_telegram.md).
 
 ## 5. Grafo multiagente
 
@@ -158,6 +204,8 @@ El estado es un `TypedDict` (`AgentState`) en `backend/app/agents/state.py`. Los
 | `siguiente` | `str` | Decisión del supervisor para la siguiente arista. |
 | `pasos` | `list[str]` | Traza de nodos ejecutados. |
 
+El estado anterior es el del grafo. El bot mantiene aparte un estado de conversación (slots, modo y preferencia de voz) en `bot_sessions.db`; no modifica `AgentState`.
+
 ## 7. Capa de datos (providers)
 
 ```mermaid
@@ -209,7 +257,7 @@ flowchart LR
 | `GET` | `/api/stats` | Totales, mínimo, máximo, promedio y desglose por comercio. | 6 |
 | `GET` | `/api/health` | Estado del servicio. | 1 |
 
-La implementación está en `backend/app/api/` y el detalle en [`04_api.md`](04_api.md).
+La implementación está en `backend/app/api/` y el detalle en [`04_api.md`](04_api.md). El bot de Telegram no consume estos endpoints: importa `run_analysis()` y ejecuta el grafo en un hilo.
 
 ## 9. Persistencia
 
@@ -243,17 +291,21 @@ Next.js 16 (App Router) con React 19, TypeScript y Tailwind CSS 4. Las páginas 
 
 El cliente `frontend/src/lib/api.ts` expone `analyze`, `analyzeStream`, `fetchHistory` y `fetchStats`; `NEXT_PUBLIC_API_URL` define la URL base. El detalle está en [`05_frontend.md`](05_frontend.md).
 
+El frontend es **opcional** para el bot: este último se usa desde Telegram y no necesita Next.js ni `uvicorn`.
+
 ## 11. Requisitos no funcionales
 
 | Requisito | Estrategia |
 |---|---|
 | Tolerancia a fallos | Fallback a mock, reintentos y registro de errores en el estado. |
 | Rendimiento | Timeouts por agente y ejecución secuencial controlada por el supervisor. |
-| Seguridad | Claves en `.env` (ignorado por git), CORS restringido y validación con Pydantic. |
-| Observabilidad | Logs estructurados y traza de pasos en `historial`. |
-| Portabilidad | SQLite/MySQL conmutables y ejecución local en Windows o Linux. |
+| Seguridad | Claves en `.env` (ignorado por git), CORS restringido, allowlist de Telegram y validación con Pydantic. |
+| Privacidad | El bot no conserva audios; Telegram no es E2E y se documenta como limitación. |
+| Observabilidad | Logs estructurados, traza de pasos en `historial` y `journalctl` en el VPS. |
+| Portabilidad | SQLite/MySQL conmutables y ejecución local en Windows o Linux; despliegue con `systemd`. |
+| Disponibilidad | Servicio `systemd` con reinicio automático y *long polling* sin puertos públicos. |
 | Mantenibilidad | Separación por capas (`graph`, `agents`, `tools`, `providers`, `db`). |
-| Calidad | 67 pruebas backend con 90.5% de cobertura, 11 pruebas frontend, ESLint y build de Next.js. |
+| Calidad | 143 pruebas backend con 90.6% de cobertura (76 del bot), 11 pruebas frontend, ESLint y build de Next.js. |
 
 ## 12. Estructura del repositorio
 
@@ -269,15 +321,19 @@ analisis-compras/
 │  │  ├─ tools/             # herramientas invocables
 │  │  ├─ providers/         # Tavily y mock
 │  │  ├─ db/                # modelos, sesión, init.sql
+│  │  ├─ bot/               # bot de Telegram, voz y sesiones
 │  │  └─ prompts/           # plantillas de los agentes
 │  ├─ data/mock/            # datos de respaldo
 │  ├─ tests/
-│  └─ requirements.txt
+│  ├─ requirements.txt
+│  ├─ requirements-bot.txt  # dependencias base del bot
+│  └─ requirements-voice.txt # STT/TTS opcional
 ├─ frontend/
 │  ├─ src/app/              # páginas / y /history
 │  ├─ src/components/       # componentes de UI
 │  └─ src/lib/              # cliente API, tipos y utilidades
 ├─ docs/                    # documentación
+├─ deploy/                  # unidad systemd del bot
 ├─ scripts/                 # utilidades
 ├─ .env.example
 └─ README.md
@@ -295,8 +351,11 @@ Las decisiones y sus alternativas están documentadas como ADRs en [`08_decision
 | Límites del free tier de Gemini | Análisis incompleto | Timeouts, reintentos y ruta determinista de respaldo. |
 | Datos inconsistentes entre tiendas | Comparación incorrecta | Normalizador único y pruebas por provider. |
 | SQLite no cumple el requisito literal | Observación en la entrega | `DATABASE_URL` conmutable a MySQL y `init.sql`. |
-| Fuga de API keys | Riesgo de seguridad | `.env` ignorado por git; solo `.env.example` se versiona. |
+| Fuga de API keys o token del bot | Riesgo de seguridad | `.env` ignorado por git; solo `.env.example` se versiona; token revocable en BotFather. |
+| Usuario no autorizado en el bot | Consumo indebido | Allowlist de IDs y rate limit por usuario. |
+| Caída del VPS o del proceso | Bot no disponible | `systemd` con `Restart=on-failure` y logs en `journalctl`. |
+| Voz lenta o no disponible | Mala experiencia | Modelo `small` en CPU; si falla la voz, el bot sigue funcionando solo con texto. |
 
 ## 15. Roadmap
 
-El plan por fases vive en el README principal. Estado actual: Fase 8 completada (pruebas y QA).
+El plan por fases vive en el README principal. Estado actual: Fase 8 completada (pruebas y QA). El bot de Telegram ya tiene texto, voz, sesiones y despliegue con `systemd`.
