@@ -98,6 +98,16 @@ def test_format_results_without_options() -> None:
     assert "sin opciones" in reply.messages[0]
 
 
+def test_format_results_includes_search_errors() -> None:
+    result = _result()
+    result.errores = ["Walmart: tiempo de espera agotado"]
+    reply = format_results(result, Session(user_id=1, chat_id=2))
+    text = "\n".join(reply.messages)
+
+    assert "Errores de búsqueda" in text
+    assert "Walmart: tiempo de espera agotado" in text
+
+
 def test_format_results_ignores_unsafe_url() -> None:
     result = _result()
     result.opciones[0].url = "javascript:alert(1)"

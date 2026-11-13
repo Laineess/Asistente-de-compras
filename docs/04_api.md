@@ -220,4 +220,4 @@ El diseño completo está en [`10_bot_telegram.md`](10_bot_telegram.md).
 
 ## Pruebas
 
-`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **143 pruebas** en verde y 90.6% de cobertura (incluye 76 del bot).
+`backend/tests/test_api.py` cubre el análisis (con grafo mockeado), el error `502`, historial, estadísticas, validación de producto/límite/filtro, errores del stream SSE y la dependencia cacheada del repositorio. La suite completa tiene **154 pruebas** en verde y 90.7% de cobertura (incluye 80 del bot).

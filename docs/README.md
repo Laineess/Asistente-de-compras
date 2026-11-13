@@ -26,7 +26,7 @@
 ## Estado de la Fase 3
 
 - Modelos de dominio en `backend/app/models.py`.
-- Providers Tavily y mock con fallback automático.
+- Providers Tavily y mock con fallback automático solo cuando no hay resultados.
 - Servicio de búsqueda con normalización, deduplicación, top-up y orden por precio.
 - Catálogo mock generado con `scripts/generate_mock_data.py`.
 - Script de prueba `scripts/search_demo.py`.
@@ -65,7 +65,7 @@
 
 ## Estado de la Fase 8
 
-- 143 pruebas backend en verde y 90.6% de cobertura con `pytest-cov` (incluye 76 del bot).
+- 154 pruebas backend en verde y 90.7% de cobertura con `pytest-cov` (incluye 80 del bot).
 - Pruebas nuevas de agentes, configuración, LLM, factory, sesión y Tavily.
 - 11 pruebas frontend con Vitest para utilidades y parser SSE.
 - `npm test`, `npm run lint` y `npm run build` sin errores.

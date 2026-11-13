@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from app.models import ProductQuery, Store
+from app.models import ProductOption, ProductQuery, Store
 from app.providers.base import StoreProvider
 from app.providers.mock_provider import MockProvider
 from app.providers.service import ProductSearchService
@@ -18,6 +18,15 @@ class FailingProvider(StoreProvider):
 
     def search(self, query: str, limit: int = 3):
         raise RuntimeError("fuente caida")
+
+
+class StaticProvider(StoreProvider):
+    def __init__(self, store: Store, options: list[ProductOption]) -> None:
+        super().__init__(store)
+        self._options = options
+
+    def search(self, query: str, limit: int = 3) -> list[ProductOption]:
+        return self._options[:limit]
 
 
 def test_mock_provider_returns_catalog_matches() -> None:
@@ -51,6 +60,31 @@ def test_service_falls_back_to_mock_when_provider_fails() -> None:
     assert result.tiendas_con_mock == [Store.walmart]
     assert result.errores
     assert all(option.comercio is Store.walmart for option in result.opciones)
+
+
+def test_service_does_not_fill_real_results_with_mock() -> None:
+    option = ProductOption(
+        nombre="Laptop real",
+        comercio=Store.walmart,
+        precio=Decimal("10000.00"),
+        url="https://www.walmart.com.mx/ip/laptop-real/1",
+        fuente="tavily",
+    )
+    service = ProductSearchService(
+        providers={Store.walmart: StaticProvider(Store.walmart, [option])},
+        fallback_providers={Store.walmart: MockProvider(Store.walmart)},
+    )
+
+    result = service.search(
+        ProductQuery(
+            producto="laptop",
+            tiendas=[Store.walmart],
+            limite_por_tienda=3,
+        )
+    )
+
+    assert result.opciones == [option]
+    assert result.tiendas_con_mock == []
 
 
 def test_service_deduplicates_and_sorts_by_price() -> None:

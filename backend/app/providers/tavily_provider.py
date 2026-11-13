@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import html
 import re
+import unicodedata
 from decimal import Decimal, InvalidOperation
+from urllib.parse import unquote
 
 from tavily import TavilyClient
 
@@ -52,7 +54,153 @@ ACCESSORY_MARKERS = (
     "adaptador",
     "protector",
     "skin",
+    "cava de vinos",
+    "enfriador",
+    "vinera",
+    "copas",
+    "copa",
+    "vasos",
+    "vaso",
+    "sacacorchos",
+    "decantador",
+    "hielera",
 )
+
+QUERY_STOPWORDS = frozenset(
+    {
+        "a",
+        "al",
+        "algo",
+        "algun",
+        "alguna",
+        "algunas",
+        "algunos",
+        "barata",
+        "barato",
+        "buena",
+        "bueno",
+        "busca",
+        "buscando",
+        "buscar",
+        "busco",
+        "calidad",
+        "casa",
+        "compara",
+        "comparalas",
+        "comparar",
+        "compararlas",
+        "comprar",
+        "compra",
+        "con",
+        "costco",
+        "de",
+        "del",
+        "dame",
+        "el",
+        "en",
+        "escuela",
+        "estudiante",
+        "familia",
+        "gamer",
+        "gaming",
+        "hasta",
+        "hogar",
+        "juegos",
+        "la",
+        "las",
+        "los",
+        "maximo",
+        "me",
+        "mejor",
+        "menos",
+        "mi",
+        "mis",
+        "muestrame",
+        "mxn",
+        "necesito",
+        "nueva",
+        "nuevo",
+        "o",
+        "oficina",
+        "opcion",
+        "opciones",
+        "para",
+        "pesos",
+        "por",
+        "precio",
+        "precios",
+        "presupuesto",
+        "producto",
+        "productos",
+        "profesional",
+        "que",
+        "quiero",
+        "recomienda",
+        "recomiendame",
+        "sam's",
+        "sams",
+        "sin",
+        "tienda",
+        "tiendas",
+        "tope",
+        "trabajo",
+        "un",
+        "una",
+        "universidad",
+        "unos",
+        "unas",
+        "wallmart",
+        "walmart",
+        "y",
+    }
+)
+
+QUERY_SYNONYMS = {
+    "laptop": (
+        "laptop",
+        "laptops",
+        "macbook",
+        "notebook",
+        "portatil",
+        "portatiles",
+        "computadora",
+        "computadoras",
+    ),
+    "computadora": (
+        "computadora",
+        "computadoras",
+        "laptop",
+        "laptops",
+        "macbook",
+        "notebook",
+        "portatil",
+        "portatiles",
+        "pc",
+    ),
+    "celular": (
+        "celular",
+        "celulares",
+        "smartphone",
+        "smartphones",
+        "telefono",
+        "telefonos",
+    ),
+    "audifonos": ("audifonos", "auriculares", "headphones", "earbuds", "airpods"),
+    "tv": ("tv", "televisor", "televisores", "television", "pantalla", "pantallas"),
+    "televisor": (
+        "televisor",
+        "televisores",
+        "television",
+        "tv",
+        "pantalla",
+        "pantallas",
+    ),
+    "refrigerador": ("refrigerador", "refrigeradores", "refri", "nevera", "frigorifico"),
+    "vino": ("vino", "vinos", "wine"),
+    "tablet": ("tablet", "tablets", "ipad"),
+    "consola": ("consola", "consolas", "playstation", "xbox", "nintendo"),
+    "zapatos": ("zapatos", "tenis", "calzado"),
+}
 
 NOISE_MARKERS = (
     "precio actual",
@@ -108,12 +256,27 @@ STORE_SUFFIX_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+MONEY_AMOUNT = (
+    r"(?:MXN\$?|MX\$|\$)\s*"
+    r"([0-9]{1,3}(?:[,\s][0-9]{3})*(?:\.[0-9]{1,2})?)"
+)
 PRICE_PATTERNS = [
+    re.compile(MONEY_AMOUNT, re.IGNORECASE),
+    re.compile(r"\b([0-9]{1,3}(?:,[0-9]{3})+\.[0-9]{2})\b"),
+]
+CURRENT_PRICE_PATTERNS = [
     re.compile(
-        r"(?:MXN|MX\$|\$)\s*([0-9]{1,3}(?:[,\s][0-9]{3})*(?:\.[0-9]{1,2})?)",
+        r"Precio(?!\s+original)\s*"
+        r"(?:actual|de socio|especial|final|en línea|en linea)?\s*"
+        rf"[:.]?\s*{MONEY_AMOUNT}",
         re.IGNORECASE,
     ),
-    re.compile(r"\b([0-9]{1,3}(?:,[0-9]{3})+\.[0-9]{2})\b"),
+]
+ORIGINAL_PRICE_PATTERNS = [
+    re.compile(
+        rf"Precio\s+original\s*[:.]?\s*{MONEY_AMOUNT}",
+        re.IGNORECASE,
+    ),
 ]
 RATING_PATTERN = re.compile(r"([0-5](?:\.[0-9])?)\s*(?:de\s*5|/\s*5|estrellas)", re.IGNORECASE)
 SPLIT_PATTERN = re.compile(r"(?<=[.!?])\s+|\s+[·;|]\s+|\n+")
@@ -135,17 +298,76 @@ def clean_product_title(value: str) -> str:
     return title
 
 
-def extract_price(text: str) -> Decimal | None:
+def title_from_url(url: str) -> str | None:
+    value = unquote(url or "")
+    slug = ""
+    if "/p/" in value:
+        slug = value.split("/p/", 1)[0].rsplit("/", 1)[-1]
+    elif "/ip/" in value:
+        slug = value.split("/ip/", 1)[1].split("/", 1)[0]
+    if not slug:
+        return None
+    title = " ".join(re.sub(r"[-_]+", " ", slug).split())
+    return title[:200] or None
+
+
+def normalize_search_text(value: str) -> str:
+    value = unicodedata.normalize("NFKD", value or "")
+    value = "".join(char for char in value if not unicodedata.combining(char))
+    return " ".join(value.lower().split())
+
+
+def query_terms(query: str) -> tuple[str, ...]:
+    terms = re.findall(r"[a-z0-9]+", normalize_search_text(query))
+    expanded: list[str] = []
+    for term in terms:
+        if (len(term) < 2 and not term.isdigit()) or term in QUERY_STOPWORDS:
+            continue
+        expanded.extend(QUERY_SYNONYMS.get(term, (term,)))
+    return tuple(dict.fromkeys(expanded))
+
+
+def is_relevant(query: str, title: str, url: str) -> bool:
+    terms = query_terms(query)
+    if not terms:
+        return True
+    haystack = normalize_search_text(f"{title} {url}")
+    tokens = set(re.findall(r"[a-z0-9]+", haystack))
+    return any(
+        term in tokens or f"{term}s" in tokens or f"{term}es" in tokens
+        for term in terms
+    )
+
+
+def _match_price(match: re.Match[str]) -> Decimal | None:
+    raw = match.group(1).replace(",", "").replace(" ", "")
+    try:
+        price = Decimal(raw)
+    except InvalidOperation:
+        return None
+    return price if price > 0 else None
+
+
+def extract_price(text: str, title: str | None = None) -> Decimal | None:
+    value = text or ""
+    for pattern in [*CURRENT_PRICE_PATTERNS, *ORIGINAL_PRICE_PATTERNS]:
+        match = pattern.search(value)
+        if match is not None:
+            price = _match_price(match)
+            if price is not None:
+                return price
+
+    search_text = value
+    if title:
+        index = search_text.lower().find(title.lower())
+        if index > 0:
+            search_text = search_text[index:]
     for pattern in PRICE_PATTERNS:
-        match = pattern.search(text or "")
-        if not match:
+        match = pattern.search(search_text)
+        if match is None:
             continue
-        raw = match.group(1).replace(",", "").replace(" ", "")
-        try:
-            price = Decimal(raw)
-        except InvalidOperation:
-            continue
-        if price > 0:
+        price = _match_price(match)
+        if price is not None:
             return price
     return None
 
@@ -208,11 +430,17 @@ class TavilyProvider(StoreProvider):
                 continue
             if self._is_generic_title(title):
                 continue
+            if not is_relevant(query, title, url):
+                continue
+            if not is_relevant(query, title, ""):
+                url_title = title_from_url(url)
+                if url_title and is_relevant(query, url_title, ""):
+                    title = url_title
             if self._is_accessory_only(query, title):
                 continue
 
             combined = f"{title} {content}"
-            price = extract_price(combined)
+            price = extract_price(combined, title=title)
             if not title or price is None:
                 continue
 

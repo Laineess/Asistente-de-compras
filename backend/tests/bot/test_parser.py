@@ -66,6 +66,20 @@ def test_parse_does_not_treat_casa_as_profile() -> None:
     assert parsed.perfil is None
 
 
+def test_parse_store_typos_and_conversational_noise() -> None:
+    parsed = parse_request("busco una laptop con comparalas en wallmart")
+
+    assert parsed.producto == "laptop"
+    assert parsed.tiendas == [Store.walmart]
+
+
+def test_parse_sams_apostrophe_alias() -> None:
+    parsed = parse_request("busca audifonos en Sam's Club")
+
+    assert parsed.producto == "audifonos"
+    assert parsed.tiendas == [Store.sams]
+
+
 def test_parse_empty_message() -> None:
     parsed = parse_request("   ")
 

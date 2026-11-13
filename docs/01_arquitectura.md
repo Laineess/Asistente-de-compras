@@ -241,10 +241,10 @@ flowchart LR
 **Comportamiento implementado**
 
 1. `TavilyProvider` consulta Tavily con `search_depth="advanced"` y se queda solo con URLs de producto (`/ip/` en Walmart y Sam's, `/p/` en Costco).
-2. Descarta títulos genéricos (categorías, promociones) y accesorios que no corresponden al producto buscado.
-3. Extrae precio y calificación con expresiones regulares y convierte fragmentos de contenido en reseñas.
+2. Descarta títulos genéricos (categorías, promociones), accesorios y resultados sin relación con el producto; si el título no describe el artículo, usa el slug de la URL.
+3. Extrae precio y calificación con expresiones regulares, prioriza precios etiquetados (`Precio`, `Precio actual`, `Precio original`) y convierte fragmentos de contenido en reseñas.
 4. `MockProvider` busca coincidencias por nombre, descripción y etiquetas; si no hay coincidencias, genera opciones sintéticas marcadas como `fuente="mock"`.
-5. `ProductSearchService` usa mock cuando el provider falla o devuelve cero resultados, y completa hasta el límite solicitado sin duplicar nombres.
+5. `ProductSearchService` usa mock solo cuando el provider falla o devuelve cero resultados; no mezcla resultados reales con mock y deduplica nombres.
 6. El resultado final se deduplica y se ordena por precio ascendente.
 
 ## 8. API HTTP
@@ -305,7 +305,7 @@ El frontend es **opcional** para el bot: este último se usa desde Telegram y no
 | Portabilidad | SQLite/MySQL conmutables y ejecución local en Windows o Linux; despliegue con `systemd`. |
 | Disponibilidad | Servicio `systemd` con reinicio automático y *long polling* sin puertos públicos. |
 | Mantenibilidad | Separación por capas (`graph`, `agents`, `tools`, `providers`, `db`). |
-| Calidad | 143 pruebas backend con 90.6% de cobertura (76 del bot), 11 pruebas frontend, ESLint y build de Next.js. |
+| Calidad | 154 pruebas backend con 90.7% de cobertura (80 del bot), 11 pruebas frontend, ESLint y build de Next.js. |
 
 ## 12. Estructura del repositorio
 

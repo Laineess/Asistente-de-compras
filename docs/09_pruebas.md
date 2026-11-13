@@ -1,6 +1,6 @@
 # Pruebas
 
-> Estado: Fase 8 completada y bot cerrado (texto, voz y despliegue). Backend con pytest y cobertura; frontend con Vitest, ESLint y build de Next.js; bot con 76 pruebas.
+> Estado: Fase 8 completada y bot cerrado en local (texto y voz verificados). Backend con pytest y cobertura; frontend con Vitest, ESLint y build de Next.js; bot con 80 pruebas. Despliegue VPS pendiente.
 
 ## 1. Estrategia
 
@@ -25,7 +25,7 @@ Las pruebas no usan claves reales ni red: Tavily, Gemini y el grafo se sustituye
 
 | Archivo | Pruebas | Cobertura funcional |
 |---|---:|---|
-| `test_agents.py` | 14 | Precios con presupuesto, supervisor, validador, audiencia, síntesis, búsqueda y modelos. |
+| `test_agents.py` | 15 | Precios con presupuesto, supervisor, validador, audiencia, síntesis, búsqueda y modelos. |
 | `test_api.py` | 11 | Endpoints, SSE, validación, presupuesto y dependencia del repositorio. |
 | `test_config.py` | 3 | Rutas SQLite y CORS. |
 | `test_db.py` | 11 | Repositorio, filtros, estadísticas, sesión y persistencia. |
@@ -33,17 +33,17 @@ Las pruebas no usan claves reales ni red: Tavily, Gemini y el grafo se sustituye
 | `test_graph.py` | 5 | Flujo completo, LLM falso, fallo de búsqueda y construcción del grafo. |
 | `test_health.py` | 3 | Health, metadatos y lifespan. |
 | `test_llm.py` | 7 | `content_to_text`, JSON, `invoke_text/json` y `build_llm`. |
-| `test_providers.py` | 7 | Mock, fallback, deduplicación, precios, rating y títulos. |
-| `test_tavily_provider.py` | 4 | Búsqueda normalizada, filtros, límite y helpers. |
-| `bot/test_parser.py` | 8 | Producto, tiendas, presupuesto, perfil, límite y casos límite. |
+| `test_providers.py` | 8 | Mock, fallback sin mezcla, deduplicación, precios, rating y títulos. |
+| `test_tavily_provider.py` | 9 | Búsqueda normalizada, relevancia, filtros, precios, límite y helpers. |
+| `bot/test_parser.py` | 10 | Producto, tiendas, typos, ruido conversacional, presupuesto, perfil y límite. |
 | `bot/test_conversation.py` | 8 | Slots, estados, confirmación, cancelación y kwargs. |
 | `bot/test_session_store.py` | 5 | Roundtrip, actualización, aislamiento, expiración y purga. |
-| `bot/test_formatter.py` | 6 | Agrupación, top 3, enlaces, mensajes largos y URLs inseguras. |
+| `bot/test_formatter.py` | 7 | Agrupación, top 3, enlaces, errores de búsqueda, mensajes largos y URLs inseguras. |
 | `bot/test_handlers.py` | 21 | Allowlist, comandos, rate limit, callbacks, voz y flujo con grafo falso. |
 | `bot/test_voice.py` | 24 | STT/TTS, PyAV, conversión, fallbacks y limpieza de temporales. |
-| `bot/test_main.py` | 3 | Validación de token/allowlist y arranque con polling falso. |
+| `bot/test_main.py` | 4 | Validación de token/allowlist, arranque con polling falso y redacción de token en logs. |
 | `bot/test_runner.py` | 1 | Ejecución del análisis en hilo con doble. |
-| **Total** | **143** | 67 base + 76 del bot. |
+| **Total** | **154** | 74 base + 80 del bot. |
 
 `backend/.coveragerc` limita la medición a `app/` y omite las plantillas de prompts.
 
@@ -57,8 +57,8 @@ cd backend
 
 ### Resultado
 
-- **143 pruebas en verde** (67 base + 76 del bot).
-- **Cobertura total: 90.6%** (ramas incluidas).
+- **154 pruebas en verde** (74 base + 80 del bot).
+- **Cobertura total: 90.7%** (ramas incluidas).
 - Archivos con cobertura completa: `api/routes.py`, `api/schemas.py`, `db/repository.py`, `graph/builder.py`, `agents/supervisor.py`, `agents/persistence_agent.py`, `main.py` y `models.py`.
 - Módulos con mayor margen: `agents/audience_agent.py` (75.8%), `agents/synthesis_agent.py` (77.7%) y `agents/review_agent.py` (89.4%), por ramas de sanitización y prompts que no se ejercitan sin un LLM real.
 - El presupuesto se prueba con opciones dentro y fuera del límite; la API rechaza valores negativos.
@@ -137,7 +137,7 @@ Casos mínimos:
 - Si falla TTS, la respuesta de texto se envía igual.
 - Las sesiones expiran y no se mezclan entre usuarios.
 
-QA manual en Telegram real (pendiente de ejecutar):
+QA manual en Telegram real (texto y voz verificados; despliegue `systemd` pendiente):
 
 1. `/start` y consulta con producto, tiendas y presupuesto.
 2. Consulta sin producto: el bot debe preguntarlo.
@@ -147,7 +147,7 @@ QA manual en Telegram real (pendiente de ejecutar):
 6. Verificar enlaces y top 3, sin productos duplicados.
 7. Comprobar que el servicio `systemd` reinicia tras un fallo simulado.
 
-Los conteos actualizados son 143 backend (76 del bot) y 11 frontend.
+Los conteos actualizados son 154 backend (80 del bot) y 11 frontend.
 
 ## 6. Limitaciones
 

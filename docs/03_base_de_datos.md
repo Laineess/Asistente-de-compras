@@ -224,7 +224,7 @@ FLUSH PRIVILEGES;
 .venv/Scripts/python.exe scripts/clear.py --yes
 ```
 
-El agente guarda por defecto al ejecutar `scripts/run_agent.py`; usa `--sin-db` para omitir la persistencia. La suite tiene 143 pruebas y 90.6% de cobertura, incluidas las de repositorio, filtros, estadísticas, sesión, nodo de persistencia, grafo con SQLite temporal, endpoints de la API, sesiones y voz del bot.
+El agente guarda por defecto al ejecutar `scripts/run_agent.py`; usa `--sin-db` para omitir la persistencia. La suite tiene 154 pruebas y 90.7% de cobertura, incluidas las de repositorio, filtros, estadísticas, sesión, nodo de persistencia, grafo con SQLite temporal, endpoints de la API, sesiones y voz del bot.
 
 ## 12. Sesiones del bot de Telegram
 

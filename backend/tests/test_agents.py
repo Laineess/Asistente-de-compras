@@ -230,6 +230,7 @@ def test_validator_adds_and_deduplicates_warnings() -> None:
     updated = validator(
         {
             "resultado": result,
+            "tiendas": list(Store),
             "advertencias": ["Aviso existente"],
             "pasos": [],
         }
@@ -244,6 +245,25 @@ def test_validator_adds_and_deduplicates_warnings() -> None:
     assert any("errores parciales" in warning for warning in warnings)
     assert updated["resultado"].advertencias == warnings
     assert updated["pasos"] == ["validar:ok"]
+
+
+def test_validator_does_not_warn_when_requested_store_has_results() -> None:
+    result = AnalysisResult(
+        producto="laptop",
+        tiendas=[Store.walmart],
+        opciones=[make_option("Laptop", Store.walmart, "100.00")],
+        resumen_resenas=None,
+    )
+
+    updated = validator(
+        {
+            "resultado": result,
+            "tiendas": [Store.walmart],
+            "pasos": [],
+        }
+    )
+
+    assert not any("tiendas" in warning for warning in updated["advertencias"])
 
 
 def test_validator_without_result() -> None:

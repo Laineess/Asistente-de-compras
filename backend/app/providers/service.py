@@ -48,21 +48,6 @@ class ProductSearchService:
                     limit=query.limite_por_tienda,
                 )
                 tiendas_con_mock.append(store)
-            elif len(store_options) < query.limite_por_tienda:
-                fallback = self._fallback.get(store) or MockProvider(store)
-                existing = {normalize_key(option.nombre) for option in store_options}
-                extra = [
-                    option
-                    for option in fallback.search(
-                        query.producto,
-                        limit=query.limite_por_tienda,
-                    )
-                    if normalize_key(option.nombre) not in existing
-                ]
-                if extra:
-                    missing = query.limite_por_tienda - len(store_options)
-                    store_options.extend(extra[:missing])
-                    tiendas_con_mock.append(store)
 
             opciones.extend(store_options)
 

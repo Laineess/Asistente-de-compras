@@ -183,7 +183,7 @@ Prueba del agente multiagente:
 
 > Gemini free tier: 20 solicitudes/día. El agente usa heurísticas si se agota la cuota.
 
-La suite completa tiene 143 pruebas en verde y una cobertura de backend de 90.6%.
+La suite completa tiene 154 pruebas en verde y una cobertura de backend de 90.7%.
 
 Verificación del frontend:
 
@@ -196,7 +196,7 @@ npm run build
 
 El frontend suma 11 pruebas unitarias con Vitest.
 
-El bot de Telegram suma 76 pruebas propias (parser, conversación, sesiones, formateo, voz y handlers). Detalle en [`docs/09_pruebas.md`](docs/09_pruebas.md).
+El bot de Telegram suma 80 pruebas propias (parser, conversación, sesiones, formateo, voz y handlers). Detalle en [`docs/09_pruebas.md`](docs/09_pruebas.md).
 
 ## Estado del proyecto
 

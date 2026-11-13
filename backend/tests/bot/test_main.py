@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from app.bot import main as bot_main
@@ -47,3 +49,21 @@ def test_main_runs_polling(monkeypatch) -> None:
 
     assert application.polling_calls
     assert "allowed_updates" in application.polling_calls[0]
+
+
+def test_token_redaction_filter() -> None:
+    token = "123456:ABC"
+    record = logging.LogRecord(
+        name="httpx",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=1,
+        msg="POST https://api.telegram.org/bot%s/getMe",
+        args=(token,),
+        exc_info=None,
+    )
+
+    bot_main._TokenRedactionFilter(token).filter(record)
+
+    assert token not in record.getMessage()
+    assert "***" in record.getMessage()

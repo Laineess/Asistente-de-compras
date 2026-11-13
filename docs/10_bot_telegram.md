@@ -320,7 +320,7 @@ sudo systemctl restart compras-bot
 | `backend/tests/bot/test_voice.py` | STT/TTS, PyAV, conversión, fallbacks y limpieza. |
 | `backend/tests/bot/test_handlers.py` | Allowlist, comandos, rate limit, voz y flujo completo con grafo falso. |
 
-Las pruebas no descargan modelos ni llaman a Telegram. El bot suma **76 pruebas** a las 67 existentes: **143 pruebas backend** en total, con 90.6% de cobertura.
+Las pruebas no descargan modelos ni llaman a Telegram. El bot suma **80 pruebas** a las 74 existentes: **154 pruebas backend** en total, con 90.7% de cobertura.
 
 ## 16. Limitaciones
 

@@ -9,10 +9,18 @@ def validator(state: AgentState) -> dict:
         return {"pasos": [*state.get("pasos", []), "validar:sin-resultado"]}
 
     warnings = list(state.get("advertencias", []))
+    requested = set(state.get("tiendas") or result.tiendas)
     stores = {option.comercio for option in result.opciones}
-    if len(stores) < 3:
-        names = ", ".join(store.display_name for store in sorted(stores, key=lambda s: s.value))
-        warnings.append(f"Solo se analizaron {len(stores)} de 3 tiendas: {names}.")
+    analyzed = stores & requested
+    missing = requested - stores
+    if missing:
+        names = ", ".join(
+            store.display_name for store in sorted(analyzed, key=lambda s: s.value)
+        )
+        warnings.append(
+            f"Solo se analizaron {len(analyzed)} de {len(requested)} tiendas: "
+            f"{names or 'ninguna'}."
+        )
     if result.resumen_resenas is None or result.resumen_resenas.resenas_analizadas < 3:
         warnings.append("No se alcanzaron al menos 3 reseñas analizadas.")
     if any(option.fuente == "mock" for option in result.opciones):

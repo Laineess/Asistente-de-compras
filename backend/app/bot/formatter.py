@@ -261,6 +261,10 @@ def format_results(result: AnalysisResult, session: Session) -> BotReply:
         blocks.append(
             "<b>Avisos</b>\n" + html.escape("; ".join(result.advertencias))
         )
+    if result.errores:
+        blocks.append(
+            "<b>Errores de búsqueda</b>\n" + html.escape("; ".join(result.errores))
+        )
 
     messages = split_message("\n\n".join(blocks))
     return BotReply(messages=messages, audio_scripts=audio_scripts, groups=groups)

@@ -10,10 +10,19 @@ from app.models import Store
 STORE_ALIASES: dict[str, Store] = {
     "walmart": Store.walmart,
     "wal mart": Store.walmart,
+    "wallmart": Store.walmart,
+    "wal-mart": Store.walmart,
+    "walm art": Store.walmart,
+    "walmrt": Store.walmart,
     "costco": Store.costco,
     "sams": Store.sams,
     "sam s": Store.sams,
+    "samsclub": Store.sams,
     "sams club": Store.sams,
+    "sam's": Store.sams,
+    "sam's club": Store.sams,
+    "sam’s": Store.sams,
+    "sam’s club": Store.sams,
 }
 
 PROFILE_ALIASES: dict[str, str] = {
@@ -32,10 +41,16 @@ PROFILE_ALIASES: dict[str, str] = {
 }
 
 LEADING_PATTERN = re.compile(
-    r"^(?:hola|oye|por favor|busca(?:me)?|buscar|compara(?:me)?|comparar|"
-    r"encuentra(?:me)?|necesito|quiero|quisiera|me gustaria|recomiendame|"
-    r"recomienda(?:me)?|ayudame a|puedes buscar|dame|muestrame|"
-    r"que me recomiendas|opciones de)\b[\s,.:;-]*",
+    r"^(?:hola|oye|por favor|busca(?:me)?|busco|buscando|buscarme|buscar|"
+    r"compara(?:me)?|comparar|encuentra(?:me)?|necesito|quiero|quisiera|"
+    r"me gustaria|recomiendame|recomienda(?:me)?|ayudame a|puedes buscar|"
+    r"dame|muestrame|que me recomiendas|opciones de)\b[\s,.:;-]*",
+    re.IGNORECASE,
+)
+
+NOISE_PATTERN = re.compile(
+    r"\b(?:con\s+)?(?:comparalas?|comparalos?|compararlas?|compararlos?|"
+    r"comparar|compara(?:me)?)\b",
     re.IGNORECASE,
 )
 
@@ -58,7 +73,10 @@ LIMIT_PATTERN = re.compile(
 )
 
 STORE_PATTERN = re.compile(
-    r"\b(?:en|de|tienda|tiendas)?\s*(walmart|wal mart|costco|sams club|sams|sam'?s)\b",
+    r"\b(?:en|de|tienda|tiendas)?\s*"
+    r"(walmart|wallmart|walm\s*art|walmrt|costco|sams\s*club|sam'?s\s*club|"
+    r"sams|sam'?s|sam’s\s*club|sam’s)"
+    r"(?:\s+(?:méxico|mexico))?\b",
     re.IGNORECASE,
 )
 
@@ -97,6 +115,8 @@ LEADING_STOPWORDS = {
     "productos",
     "opcion",
     "opciones",
+    "precio",
+    "precios",
 }
 
 TRAILING_STOPWORDS = {"y", "o", "en", "de", "del", "para", "por", "con", "al", "a"}
@@ -169,6 +189,8 @@ def _clean_product(text: str) -> str:
     for _ in range(4):
         before = text
         text = LEADING_PATTERN.sub("", text, count=1).strip(" ,.;:-")
+        text = NOISE_PATTERN.sub(" ", text)
+        text = " ".join(text.split())
         words = text.split()
         while words and words[0] in LEADING_STOPWORDS:
             words.pop(0)

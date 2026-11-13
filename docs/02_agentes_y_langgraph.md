@@ -82,9 +82,9 @@ flowchart TD
 ### 4.1 Buscador
 
 - Construye un `ProductQuery` y llama a `ProductSearchService`.
-- Tavily consulta cada tienda con `search_depth="advanced"` y filtros de URL/título/accesorios.
+- Tavily consulta cada tienda con `search_depth="advanced"`, filtros de URL/título/accesorios y relevancia por tokens/sinónimos.
 - Si Tavily falla, no hay API key o no devuelve resultados, el servicio usa `MockProvider`.
-- Completa hasta `limite_por_tienda` opciones por tienda sin duplicar nombres y ordena por precio.
+- Respeta `limite_por_tienda`, deduplica nombres y ordena por precio; no mezcla resultados reales con mock.
 
 ### 4.2 Precios
 
@@ -158,7 +158,7 @@ Tras `sintetizar` se ejecuta siempre el validador, luego el nodo de persistencia
 | Fallo | Comportamiento |
 |---|---|
 | Tavily lanza excepción | Se usa el catálogo mock de la tienda. |
-| Tavily devuelve pocos resultados | Se completa con mock hasta el límite. |
+| Tavily devuelve pocos resultados | Se muestran solo los reales; el mock no rellena huecos. |
 | Gemini falla, agota cuota o devuelve JSON inválido | Se usa la heurística o el texto determinista. |
 | La búsqueda no devuelve opciones | El supervisor termina y reporta `errores`. |
 | Faltan tiendas o reseñas | El validador agrega advertencias. |
@@ -196,7 +196,7 @@ cd backend
 ../.venv/Scripts/python.exe -m pytest -q
 ```
 
-Cobertura actual: **143 pruebas** en verde y 90.6% de cobertura de backend (76 del bot). Incluyen providers, agentes, configuración, LLM, factory, Tavily con cliente falso, construcción del grafo, ruteo, fallback con LLM falso, reseñas heurísticas, repositorio, persistencia con SQLite temporal y endpoints de la API (incluido SSE).
+Cobertura actual: **154 pruebas** en verde y 90.7% de cobertura de backend (80 del bot). Incluyen providers, agentes, configuración, LLM, factory, Tavily con cliente falso, construcción del grafo, ruteo, fallback con LLM falso, reseñas heurísticas, repositorio, persistencia con SQLite temporal y endpoints de la API (incluido SSE).
 
 ### 8.1 Ejecución desde el bot de Telegram
 
